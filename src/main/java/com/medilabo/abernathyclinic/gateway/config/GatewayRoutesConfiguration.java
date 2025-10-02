@@ -25,7 +25,7 @@ public class GatewayRoutesConfiguration {
         				// le filtre capture la valeur avec la regex
         				// puis injecte la valeur capturée dans le path du microservice
         				//  avec un named capturing group pour la lisibilité 
-        				.rewritePath("/patient/(?<id>.*)", "/api/patient/${id}"))
+        				.rewritePath("/patient/(?<id>[0-9]+)", "/api/patient/${id}"))
         		.uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
 	        .build();
 	}
