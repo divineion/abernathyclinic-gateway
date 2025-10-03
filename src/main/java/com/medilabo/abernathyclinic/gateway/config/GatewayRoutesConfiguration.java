@@ -20,12 +20,12 @@ public class GatewayRoutesConfiguration {
 	        // https://cloud.spring.io/spring-cloud-gateway/multi/multi__configuration.html#_configuring_predicates_and_filters_for_discoveryclient_routes
 	        .route("get_patient_route", r -> r
 	        		// prédicat : ça matche si l'URL entrante suit ce modèle
-        		.path("/patient/{id}")
+        		.path("/patient/{uuid}")
         		.filters(filter -> filter
         				// le filtre capture la valeur avec la regex
         				// puis injecte la valeur capturée dans le path du microservice
         				//  avec un named capturing group pour la lisibilité 
-        				.rewritePath("/patient/(?<id>[0-9]+)", "/api/patient/${id}"))
+        				.rewritePath("/patient/(?<uuid>[a-fA-F0-9\\-]{36})", "/api/patient/${uuid}"))
         		.uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
 	        .build();
 	}
