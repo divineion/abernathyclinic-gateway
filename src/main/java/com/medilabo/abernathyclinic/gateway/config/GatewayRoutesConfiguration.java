@@ -5,7 +5,8 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.medilabo.abernathyclinic.gateway.MicroservicesUriConstants;
+import com.medilabo.abernathyclinic.gateway.constants.MicroservicesUriConstants;
+import com.medilabo.abernathyclinic.gateway.constants.RegexConstants;
 
 @Configuration
 public class GatewayRoutesConfiguration {
@@ -25,7 +26,7 @@ public class GatewayRoutesConfiguration {
         				// le filtre capture la valeur avec la regex
         				// puis injecte la valeur capturée dans le path du microservice
         				//  avec un named capturing group pour la lisibilité 
-        				.rewritePath("/patient/(?<uuid>[a-fA-F0-9\\-]{36})", "/api/patient/${uuid}"))
+        				.rewritePath("/patient/" + RegexConstants.UUID_PATTERN, "/api/patient/uuid/${uuid}"))
         		.uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
 	        .build();
 	}
