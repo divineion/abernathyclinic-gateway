@@ -1,0 +1,13 @@
+# GatewayAutoConfiguration instancie un bean de type GlobalCoresProperies qui contiendra la configuration CORS
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          globalcors:
+            cors-configurations: 
+              '[/**]':
+                allowed-origins: "http://localhost:5173, http://localhost:5174"
+                allowed-methods: "GET,POST,PATCH,OPTIONS"
+                allowed-headers: "*"
+                maxAge: 3600
