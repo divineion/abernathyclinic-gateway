@@ -1,4 +1,4 @@
-package com.medilabo.abernathyclinic.gateway;
+package com.medilabo.abernathyclinic.gateway.constants;
 
 public final class MicroservicesUriConstants {
 	private MicroservicesUriConstants(){}
