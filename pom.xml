@@ -62,6 +62,19 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/me.paulschwarz/spring-dotenv -->
+		<dependency>
+		    <groupId>me.paulschwarz</groupId>
+		    <artifactId>spring-dotenv</artifactId>
+		    <version>4.0.0</version>
+		</dependency>
+		
+		<!-- support for accessing, storing and revoking secrets -->
+		<dependency>
+		    <groupId>org.springframework.vault</groupId>
+		    <artifactId>spring-vault-core</artifactId>
+	  	</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
