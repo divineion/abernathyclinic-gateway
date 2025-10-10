@@ -26,10 +26,10 @@ public class VaultConfiguration {
 	@Value("${vault.scheme}")
 	private String scheme;
 	
-	@Value("${vault.write-token}")
+	@Value("${vault.users-secrets.write-token}")
 	private String writeToken;
 	
-	@Value("${vault.read-token}")
+	@Value("${vault.users-secrets.read-token}")
 	private String readToken;
 	
 	private VaultEndpoint vaultEndpoint;
