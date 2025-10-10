@@ -35,7 +35,7 @@ public class UserInitializer {
 	@Value("${ORGANIZER2_PASSWORD}")
 	private String organizer2Password;
 	
-	@Value("${spring.cloud.vault.kv.path}")
+	@Value("${vault.kv.path}")
 	private String usersSecretBasePath;
 
 	@Bean

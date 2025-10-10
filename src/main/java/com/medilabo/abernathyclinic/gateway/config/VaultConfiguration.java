@@ -17,17 +17,17 @@ import org.springframework.vault.core.VaultTemplate;
  */
 @Configuration
 public class VaultConfiguration {
-	@Value("${spring.cloud.vault.host}")
+	@Value("${vault.host}")
 	private String host;
 	
-	@Value("${spring.cloud.vault.port}")
+	@Value("${vault.port}")
 	private int port;
 	
-	@Value("${spring.cloud.vault.scheme}")
+	@Value("${vault.scheme}")
 	private String scheme;
 	
-	@Value("${spring.cloud.vault.token}")
-	private String token;
+	@Value("${vault.write-token}")
+	private String writeToken;
 	
 	private VaultEndpoint vaultEndpoint;
 	
