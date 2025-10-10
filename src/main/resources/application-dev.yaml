@@ -13,10 +13,9 @@ spring:
                 maxAge: 3600
 # configuration properties for interacting with Vault
 vault:
-  host: localhost
+  host: ${DEV_VAULT_ENDPOINT_HOST}
   port: ${DEV_VAULT_ENDPOINT_PORT}
-  scheme: http
-  authentication: TOKEN
+  scheme: ${DEV_VAULT_ENDPOINT_SCHEME}
   write-token: ${DEV_SPRING_USER_CREATOR_VAULT_TOKEN}
   read-token: ${DEV_SPRING_USER_READER_VAULT_TOKEN}
   kv:
