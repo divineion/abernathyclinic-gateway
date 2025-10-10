@@ -20,4 +20,4 @@ vault:
   read-token: ${DEV_SPRING_USER_READER_VAULT_TOKEN}
   kv:
     backend: secret
-    path: ${DEV_KV_PATH}
+    path: ${DEV_VAULT_USERS_KV_PATH}
