@@ -11,3 +11,13 @@ spring:
                 allowed-methods: "GET,POST,PATCH,OPTIONS"
                 allowed-headers: "*"
                 maxAge: 3600
+# configuration properties for interacting with Vault
+vault:
+  host: ${DEV_VAULT_ENDPOINT_HOST}
+  port: ${DEV_VAULT_ENDPOINT_PORT}
+  scheme: ${DEV_VAULT_ENDPOINT_SCHEME}
+  users-secrets.write-token : ${DEV_SPRING_USER_CREATOR_VAULT_TOKEN}
+  users-secrets.read-token: ${DEV_SPRING_USER_READER_VAULT_TOKEN}
+  kv:
+    backend: secret
+    path: ${DEV_VAULT_USERS_KV_PATH}

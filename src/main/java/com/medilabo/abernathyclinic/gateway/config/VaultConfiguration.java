@@ -1,0 +1,60 @@
+package com.medilabo.abernathyclinic.gateway.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.vault.authentication.TokenAuthentication;
+import org.springframework.vault.client.VaultEndpoint;
+import org.springframework.vault.core.VaultTemplate;
+
+/**
+ * This class defines and initializes {@link VaultTemplate} beans used to interact 
+ * with HashiCorp Vault service. 
+ * <p>
+ * Retrieves Vault connection parameters (host, port, scheme and token) from
+ * the application properties and configures a {@link VaultTemplate}. 
+ * </p>
+ */
+@Configuration
+public class VaultConfiguration {
+	@Value("${vault.host}")
+	private String host;
+	
+	@Value("${vault.port}")
+	private int port;
+	
+	@Value("${vault.scheme}")
+	private String scheme;
+	
+	@Value("${vault.users-secrets.write-token}")
+	private String writeToken;
+	
+	@Value("${vault.users-secrets.read-token}")
+	private String readToken;
+	
+	private VaultEndpoint vaultEndpoint;
+	
+	/**
+	 * Creates a {@link VaultTemplate} bean to write into HashiCorp Vault. 
+	 * @return a configured {@link VaultTemplate}
+	 */
+	@Bean("vaultWriterTemplate")
+	VaultTemplate vaultWriterTemplate() {
+		vaultEndpoint = VaultEndpoint.create(host, port);
+		vaultEndpoint.setScheme(scheme);
+		
+		return new VaultTemplate(vaultEndpoint, new TokenAuthentication(writeToken));
+	}
+	
+	/**
+	 * Creates a {@link VaultTemplate} bean to read secrets from HashiCorp Vault. 
+	 * @return a configured {@link VaultTemplate}
+	 */
+	@Bean("vaultReaderTemplate")
+	VaultTemplate vaultReaderTemplate() {
+		vaultEndpoint = VaultEndpoint.create(host, port);
+		vaultEndpoint.setScheme(scheme);
+		
+		return new VaultTemplate(vaultEndpoint, new TokenAuthentication(readToken));
+	}
+}
