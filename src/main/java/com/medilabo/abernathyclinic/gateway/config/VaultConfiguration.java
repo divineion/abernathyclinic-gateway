@@ -8,7 +8,7 @@ import org.springframework.vault.client.VaultEndpoint;
 import org.springframework.vault.core.VaultTemplate;
 
 /**
- * This class defines and initializes the {@link VaultTemplate} bean used to interact 
+ * This class defines and initializes {@link VaultTemplate} beans used to interact 
  * with HashiCorp Vault service. 
  * <p>
  * Retrieves Vault connection parameters (host, port, scheme and token) from
@@ -29,17 +29,32 @@ public class VaultConfiguration {
 	@Value("${vault.write-token}")
 	private String writeToken;
 	
+	@Value("${vault.read-token}")
+	private String readToken;
+	
 	private VaultEndpoint vaultEndpoint;
 	
 	/**
-	 * Creates a {@link VaultTemplate} bean to interact with HashiCorp Vault. 
+	 * Creates a {@link VaultTemplate} bean to write into HashiCorp Vault. 
 	 * @return a configured {@link VaultTemplate}
 	 */
-	@Bean
-	VaultTemplate vaultTemplate() {
+	@Bean("vaultWriterTemplate")
+	VaultTemplate vaultWriterTemplate() {
 		vaultEndpoint = VaultEndpoint.create(host, port);
 		vaultEndpoint.setScheme(scheme);
 		
-		return new VaultTemplate(vaultEndpoint, new TokenAuthentication(token));
+		return new VaultTemplate(vaultEndpoint, new TokenAuthentication(writeToken));
+	}
+	
+	/**
+	 * Creates a {@link VaultTemplate} bean to read secrets from HashiCorp Vault. 
+	 * @return a configured {@link VaultTemplate}
+	 */
+	@Bean("vaultReaderTemplate")
+	VaultTemplate vaultReaderTemplate() {
+		vaultEndpoint = VaultEndpoint.create(host, port);
+		vaultEndpoint.setScheme(scheme);
+		
+		return new VaultTemplate(vaultEndpoint, new TokenAuthentication(readToken));
 	}
 }

@@ -2,6 +2,7 @@ package com.medilabo.abernathyclinic.gateway.config;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.vault.core.VaultTemplate;
 
@@ -15,7 +16,7 @@ import org.springframework.vault.core.VaultTemplate;
 public class VaultSecretWriter {
 	private final VaultTemplate vaultTemplate;
 	
-	public VaultSecretWriter(VaultTemplate vaultTemplate) {
+	public VaultSecretWriter(@Qualifier("vaultWriterTemplate") VaultTemplate vaultTemplate) {
 		this.vaultTemplate = vaultTemplate;
 	}
 	
