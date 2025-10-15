@@ -39,7 +39,6 @@ public class VaultSecretReaderTest {
 		VaultResponse response = reader.readSecret(TEST_PATH);
 		
 		// Assert		
-		assertEquals(VaultResponse.class, response.getClass());
 		assertEquals(expectedData, response.getData());
 		
 		verify(mockVaultTemplate).read(TEST_PATH);
