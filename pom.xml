@@ -75,6 +75,33 @@
 		    <groupId>org.springframework.vault</groupId>
 		    <artifactId>spring-vault-core</artifactId>
 	  	</dependency>
+	  	
+	  	<!-- testcontainers -->
+	  	<dependency>
+		    <groupId>org.testcontainers</groupId>
+		    <artifactId>testcontainers</artifactId>
+		    <scope>test</scope>
+		</dependency>
+		
+		<!-- module junit -->
+		<dependency>
+		    <groupId>org.testcontainers</groupId>
+		    <artifactId>junit-jupiter</artifactId>
+		    <scope>test</scope>
+		</dependency>
+		
+		<!-- module vault -->
+		<dependency>
+		    <groupId>org.testcontainers</groupId>
+		    <artifactId>vault</artifactId>
+		    <scope>test</scope>
+		</dependency>		
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-testcontainers</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
@@ -94,6 +121,48 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			
+			<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-compiler-plugin</artifactId>
+		    </plugin>
+			
+			<plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-failsafe-plugin</artifactId>
+	            <dependencies>
+	                <dependency>
+	                    <groupId>org.junit.jupiter</groupId>
+	                    <artifactId>junit-jupiter-engine</artifactId>
+	                    <version>5.9.1</version>
+	                </dependency>
+	            </dependencies>
+	        </plugin>
+			
+			<plugin>
+			    <artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+		
+			<plugin>
+	            <groupId>org.jacoco</groupId>
+	            <artifactId>jacoco-maven-plugin</artifactId>
+	            <version>0.8.13</version>
+	            <executions>
+	                <execution>
+	                    <id>jacoco-initialize</id>
+	                    <goals>
+	                        <goal>prepare-agent</goal>
+	                    </goals>
+	                </execution>
+	                <execution>
+	                    <id>jacoco-site</id>
+	                    <phase>verify</phase>
+	                    <goals>
+	                        <goal>report</goal>
+	                    </goals>
+	                </execution>
+	            </executions>
+	        </plugin>
 		</plugins>
 	</build>
 
