@@ -24,7 +24,7 @@ public class VaultSecretReaderTest {
 	@InjectMocks
 	private VaultSecretReader reader;
 	
-	private static final String TEST_PATH = "secret/abernathyclinic-gateway/dev/users/organizer1";
+	private static final String TEST_PATH = "secret/abernathyclinic-gateway/test/users/organizer1";
 	
 	@Test
 	public void testReadSecret_shouldReturnVaultResponse() {

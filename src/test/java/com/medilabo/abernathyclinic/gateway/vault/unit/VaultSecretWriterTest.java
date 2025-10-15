@@ -28,7 +28,7 @@ public class VaultSecretWriterTest {
 	@InjectMocks
 	private VaultSecretWriter writer;
 	
-	private static final String PATH = "secret/abernathyclinic-gateway/dev/users/";
+	private static final String PATH = "secret/abernathyclinic-gateway/test/users/";
 	private static final String USERNAME = "TestUsername";
 	private static final String FULL_PATH = PATH + USERNAME;
 	
