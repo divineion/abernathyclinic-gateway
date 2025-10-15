@@ -54,8 +54,8 @@ public class UserInitializer {
 			.roles("ORGANIZER")
 			.build();
 		
-		Map<String, String> secret1 = Map.of("password", organizer1.getPassword());
-		Map<String, String> secret2 = Map.of("password", organizer2.getPassword());
+		Map<String, Object> secret1 = Map.of("password", organizer1.getPassword());
+		Map<String, Object> secret2 = Map.of("password", organizer2.getPassword());
 				
 		// write secrets into Vault backend storage
 		vaultSecretWriter.writeSecret(usersSecretBasePath+"organizer1", secret1);
