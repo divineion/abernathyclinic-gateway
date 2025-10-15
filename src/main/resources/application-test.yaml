@@ -1,0 +1,12 @@
+# configuration properties for interacting with Vault
+vault:
+  host: ${TEST_VAULT_ENDPOINT_HOST}
+  port: ${TEST_VAULT_ENDPOINT_PORT}
+  scheme: ${TEST_VAULT_ENDPOINT_SCHEME}
+  token: 
+    users:
+      write: ${TEST_SPRING_USER_CREATOR_VAULT_TOKEN}
+      read: ${TEST_SPRING_USER_READER_VAULT_TOKEN}
+  kv:
+    backend: secret
+    path: ${TEST_VAULT_USERS_KV_PATH}
