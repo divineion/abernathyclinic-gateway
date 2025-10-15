@@ -1,0 +1,37 @@
+{"properties": [
+  {
+    "name": "vault.host",
+    "type": "java.lang.String",
+    "description": "The hostname or IP address of the HashiCorp Vault server"
+  },
+  {
+    "name": "vault.scheme",
+    "type": "java.lang.String",
+    "description": "The protocol scheme used to connect to the Vault server (default https)."
+  },
+  {
+    "name": "vault.port",
+    "type": "java.lang.String",
+    "description": "The port number on which the HashiCorp Vault server is listening (default 8200)."
+  },
+  {
+    "name": "vault.kv.path",
+    "type": "java.lang.String",
+    "description": "The base path for the KV secret engine."
+  },
+  {
+    "name": "vault.kv.backend",
+    "type": "java.lang.String",
+    "description": "The name or mount path of the Key/Value (KV) secret engine instance (example : secret)."
+  },
+  {
+    "name": "vault.token.users.write",
+    "type": "java.lang.String",
+    "description": "The Vault authentication token used for write operations."
+  },
+  {
+    "name": "vault.token.users.read",
+    "type": "java.lang.String",
+    "description": "The Vault authentication token used for read operations."
+  }
+]}
