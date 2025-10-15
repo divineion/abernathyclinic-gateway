@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.vault.core.VaultTemplate;
+import org.springframework.vault.support.VaultResponse;
 
 /**
  * Component responsible for writing secrets into HashiCorp Vault. 
@@ -14,10 +15,12 @@ import org.springframework.vault.core.VaultTemplate;
  */
 @Component
 public class VaultSecretWriter {
-	private final VaultTemplate vaultTemplate;
+	private final VaultTemplate vaultWriterTemplate;
+	private final VaultTemplate vaultReaderTemplate;
 	
-	public VaultSecretWriter(@Qualifier("vaultWriterTemplate") VaultTemplate vaultTemplate) {
-		this.vaultTemplate = vaultTemplate;
+	public VaultSecretWriter(@Qualifier("vaultWriterTemplate") VaultTemplate vaultWriterTemplate, @Qualifier("vaultReaderTemplate") VaultTemplate vaultReaderTemplate) {
+		this.vaultWriterTemplate = vaultWriterTemplate;
+		this.vaultReaderTemplate = vaultReaderTemplate;
 	}
 	
 	/**
@@ -25,7 +28,9 @@ public class VaultSecretWriter {
 	 * @param path the Vault storage path
 	 * @param secret the map of key-value pair to write. 
 	 */
-	public void writeSecret(String path, Map<String, String> secret) {
-		vaultTemplate.write(path, secret);
+	public VaultResponse writeSecret(String path, Map<String, Object> secret) {
+		vaultWriterTemplate.write(path, secret);
+		
+		return vaultReaderTemplate.read(path);
 	}
 }
