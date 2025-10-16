@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href=""?>
+<Configuration>
+  <Properties>
+    <Property name="LOG_SERVICE_NAME">api-gateway</Property>
+    <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} [${LOG_SERVICE_NAME}] [%t] %highlight{[%-5level]} %logger{36} - %msg%n</Property>
+  </Properties>
+  <Appenders>
+    <Console name="CONSOLE" target="SYSTEM_OUT"> 
+      <PatternLayout pattern="${LOG_PATTERN}"/>
+    </Console>
+	<File name="GATEWAY" fileName="logs/gateway-access.log">
+	  <PatternLayout pattern="${LOG_PATTERN}"/>
+	</File>
+    <File name="DEBUG" fileName="logs/debug.log"> 
+      <PatternLayout pattern="${LOG_PATTERN}"/>
+    </File>
+    <File name="ERROR" fileName="logs/errors.log"> 
+      <PatternLayout pattern="${LOG_PATTERN}"/>
+    </File>
+  </Appenders>
+  
+  <Loggers>
+    <Root level="WARN"> 
+      <AppenderRef ref="CONSOLE"/>
+      <AppenderRef ref="ERROR"/>
+    </Root>
+    <!-- trafic et routage -->
+    <Logger name="org.springframework.cloud.gateway" level="INFO" additivity="false">
+      <AppenderRef ref="GATEWAY"/>
+    </Logger>
+    <!-- messages du code applicatif -->
+    <Logger name="com.medilabo.abernathyclinic.gateway" level="DEBUG" additivity="false"> 
+      <AppenderRef ref="CONSOLE"/>
+      <AppenderRef ref="DEBUG"/>
+      <AppenderRef ref="ERROR" level = "ERROR"/>
+    </Logger>
+  </Loggers>
+</Configuration>
