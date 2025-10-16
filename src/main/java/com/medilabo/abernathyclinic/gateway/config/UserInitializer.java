@@ -7,11 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 /**
  * This configuration class initializes in-memory demo users and stores their credentials
@@ -39,7 +38,7 @@ public class UserInitializer {
 	private String usersSecretBasePath;
 
 	@Bean
-	UserDetailsService users() {	
+	MapReactiveUserDetailsService users() {	
 			//  create users
 		UserDetails organizer1 = User.builder()
 			.username("organizer1")
@@ -61,6 +60,6 @@ public class UserInitializer {
 		vaultSecretWriter.writeSecret(usersSecretBasePath+"organizer1", secret1);
 		vaultSecretWriter.writeSecret(usersSecretBasePath+"organizer2", secret2);
 		
-		return new InMemoryUserDetailsManager(organizer1, organizer2);
+		return new MapReactiveUserDetailsService(organizer1, organizer2);
 	}
 }
