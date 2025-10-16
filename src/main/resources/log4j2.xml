@@ -3,11 +3,12 @@
 <Configuration>
   <Properties>
     <Property name="LOG_SERVICE_NAME">api-gateway</Property>
-    <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} [${LOG_SERVICE_NAME}] [%t] %highlight{[%-5level]} %logger{36} - %msg%n</Property>
+    <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} [${LOG_SERVICE_NAME}] [%pid] [%t] [%-5level] %logger{36} - %msg%n</Property>
+    <Property name="CONSOLE_LOG_PATTERN">%d{yy-MM-dd HH:mm:ss} [${LOG_SERVICE_NAME}] [%t] %highlight{[%-5level]} %logger{1} - %msg%n</Property>
   </Properties>
   <Appenders>
     <Console name="CONSOLE" target="SYSTEM_OUT"> 
-      <PatternLayout pattern="${LOG_PATTERN}"/>
+      <PatternLayout pattern="${CONSOLE_LOG_PATTERN}"/>
     </Console>
 	<File name="GATEWAY" fileName="logs/gateway-access.log">
 	  <PatternLayout pattern="${LOG_PATTERN}"/>
