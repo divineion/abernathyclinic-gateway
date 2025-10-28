@@ -1,6 +1,5 @@
 package com.medilabo.abernathyclinic.gateway.it;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Map;
 
@@ -19,6 +18,8 @@ import org.testcontainers.vault.VaultContainer;
 import com.medilabo.abernathyclinic.gateway.config.VaultSecretReader;
 import com.medilabo.abernathyclinic.gateway.config.VaultSecretWriter;
 
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 @Profile("test")
 @SpringBootTest
@@ -70,19 +71,34 @@ public class VaultTestContainerIT {
 		registry.add("vault.backend.kv.version", () -> 1);
 	}
 	
+	//PrematureCloseException: Connection prematurely closed BEFORE response
+	// https://projectreactor.io/docs/netty/1.0.21/reference/index.html#_timeout_configuration
 	@Test
 	public void readSecretTest() {
-		VaultResponse response = vaultSecretReader.readSecret(PATH + CLI_USERNAME);
+		Map<String, Object> expectedData = Map.of("username", CLI_USERNAME, "password", CLI_PASSWORD);
 		
-        assertEquals(CLI_PASSWORD, response.getData().get("password"));
-        assertEquals(CLI_USERNAME, response.getData().get("username"));
+		Mono<Map<String, Object>> data = vaultSecretReader.readSecret(PATH + CLI_USERNAME)
+		.map(VaultResponse::getData);
+		
+		// j'utilise StepVerifier pour récupérer les données
+		StepVerifier.create(data)
+		// je vérifie que la méthode onNext retourne bien les bonnes données
+			.expectNext(expectedData)
+			.verifyComplete();
 	}
 	
 	@Test
 	public void writeSecretTest() {
-        Map<String, Object> testData = Map.of("username", USERNAME, "password", "testpassword");
-        VaultResponse response = vaultSecretWriter.writeSecret(PATH + USERNAME, testData);
+        Map<String, Object> expectedData = Map.of("username", USERNAME, "password", "testpassword");
         
-        assertEquals(testData, response.getData());
+        Mono<Map<String, Object>> data = vaultSecretWriter.writeSecret(PATH + USERNAME, expectedData)
+        		.map(VaultResponse::getData);
+        
+        //assertEquals(testData, response.getData());
+        // StepVerfieir s'abonne au Publisher retourné
+        StepVerifier.create(data)
+        // vérifie que l'élément reçu est égal expectedData
+        .expectNext(expectedData)
+        .verifyComplete();
 	}
 }

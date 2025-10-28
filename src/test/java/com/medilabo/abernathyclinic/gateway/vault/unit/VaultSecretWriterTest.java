@@ -1,6 +1,5 @@
 package com.medilabo.abernathyclinic.gateway.vault.unit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,18 +11,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.vault.core.VaultTemplate;
+import org.springframework.vault.core.ReactiveVaultTemplate;
 import org.springframework.vault.support.VaultResponse;
 
 import com.medilabo.abernathyclinic.gateway.config.VaultSecretWriter;
 
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
 @ExtendWith(MockitoExtension.class)
 public class VaultSecretWriterTest {
 	@Mock
-	private VaultTemplate vaultTemplate;
+	private ReactiveVaultTemplate vaultTemplate;
 	
 	@Mock
-	private VaultTemplate vaultReaderTemplate;
+	private ReactiveVaultTemplate vaultReaderTemplate;
 	
 	@InjectMocks
 	private VaultSecretWriter writer;
@@ -45,13 +47,20 @@ public class VaultSecretWriterTest {
 		Map<String, Object> secret = Map.of("username", USERNAME, "password", "testPassword");
 		expectedResponse.setData(secret);
 				
-		when(vaultReaderTemplate.read(FULL_PATH)).thenReturn(expectedResponse);
+	    when(vaultTemplate.write(FULL_PATH, secret)).thenReturn(Mono.just(expectedResponse));
+		when(vaultReaderTemplate.read(FULL_PATH)).thenReturn(Mono.just(expectedResponse));
 		
-		// Act
-		VaultResponse response = writer.writeSecret(FULL_PATH, secret);
+		// Act and assert
+		Mono<Map<String, Object>> writerResult = writer.writeSecret(FULL_PATH, secret)
+				.map(VaultResponse::getData);
 		
-		// Assert
-		assertEquals(secret, response.getData());
+		// StepVerfier s'abonne uu Publisher et le vérifie de manière synchrone
+		StepVerifier.create(writerResult)
+		// verifies that the data has been correctly extracted
+			.expectNext(secret)
+		// vérifies that the onComplete event is triggered and 
+			.verifyComplete(); // la méthode bloque le test, force le test à attendre que le Mono se termine 
+							   // pour vérifier de manière synchrone le résultat du flux
 		
 		verify(vaultTemplate).write(FULL_PATH, secret);
 		verify(vaultReaderTemplate).read(FULL_PATH);
