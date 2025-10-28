@@ -152,12 +152,10 @@ public class UserInitializer {
 
 	private Mono<Void> storeUserSecrets(AppUser user) throws JsonMappingException, JsonProcessingException {
 		Map<String, Object> secret;
-		// Convertir AppUser -> JSON String 
-		String jsonString = objectMapper.writeValueAsString(user);
-		// puis convertir jsonString en Map ; objectMapper retourne un Map brut Map<Object, Object>
+		// Convertir AppUser ->  Map ; objectMapper retourne un Map brut Map<Object, Object>
 		// il faut indiquer le type attendu sinon warning
 		// https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-core/latest/com/fasterxml/jackson/core/type/TypeReference.html
-		secret = objectMapper.readValue(jsonString, new TypeReference<Map<String, Object>>(){});
+		secret = objectMapper.convertValue(user, new TypeReference<Map<String, Object>>(){});
 				
 		Mono<VaultResponse> writeUserSecret = vaultSecretWriter.writeSecret(usersSecretBasePath + user.getUsername(), secret);
 		
