@@ -158,9 +158,7 @@ public class UserInitializer {
 		// il faut indiquer le type attendu sinon warning
 		// https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-core/latest/com/fasterxml/jackson/core/type/TypeReference.html
 		secret = objectMapper.readValue(jsonString, new TypeReference<Map<String, Object>>(){});
-		
-		secret.keySet().retainAll(List.of("username", "password", "id", "uuid", "createdAt", "updatedAt"));
-		
+				
 		Mono<VaultResponse> writeUserSecret = vaultSecretWriter.writeSecret(usersSecretBasePath + user.getUsername(), secret);
 		
 		return writeUserSecret
