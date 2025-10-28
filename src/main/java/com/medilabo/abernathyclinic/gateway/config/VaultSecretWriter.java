@@ -4,21 +4,23 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.vault.core.VaultTemplate;
+import org.springframework.vault.core.ReactiveVaultTemplate;
 import org.springframework.vault.support.VaultResponse;
+
+import reactor.core.publisher.Mono;
 
 /**
  * Component responsible for writing secrets into HashiCorp Vault. 
  * <p>
- * This component uses the {@link VaultTemplate} provided by {@link VaultConfiguration}.
+ * This component uses the {@link ReactiveVaultTemplate} provided by {@link VaultConfiguration}.
  * </p>
  */
 @Component
 public class VaultSecretWriter {
-	private final VaultTemplate vaultWriterTemplate;
-	private final VaultTemplate vaultReaderTemplate;
+	private final ReactiveVaultTemplate vaultWriterTemplate;
+	private final ReactiveVaultTemplate vaultReaderTemplate;
 	
-	public VaultSecretWriter(@Qualifier("vaultWriterTemplate") VaultTemplate vaultWriterTemplate, @Qualifier("vaultReaderTemplate") VaultTemplate vaultReaderTemplate) {
+	public VaultSecretWriter(@Qualifier("vaultWriterTemplate") ReactiveVaultTemplate vaultWriterTemplate, @Qualifier("vaultReaderTemplate") ReactiveVaultTemplate vaultReaderTemplate) {
 		this.vaultWriterTemplate = vaultWriterTemplate;
 		this.vaultReaderTemplate = vaultReaderTemplate;
 	}
@@ -28,9 +30,8 @@ public class VaultSecretWriter {
 	 * @param path the Vault storage path
 	 * @param secret the map of key-value pair to write. 
 	 */
-	public VaultResponse writeSecret(String path, Map<String, Object> secret) {
-		vaultWriterTemplate.write(path, secret);
-		
-		return vaultReaderTemplate.read(path);
+	public Mono<VaultResponse> writeSecret(String path, Map<String, Object> secret) {
+		return vaultWriterTemplate.write(path, secret)
+				.then(vaultReaderTemplate.read(path));
 	}
 }
