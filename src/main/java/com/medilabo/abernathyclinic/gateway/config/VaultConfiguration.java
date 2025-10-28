@@ -3,9 +3,15 @@ package com.medilabo.abernathyclinic.gateway.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.vault.authentication.TokenAuthentication;
+import org.springframework.http.client.reactive.ClientHttpConnector;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.vault.authentication.VaultTokenSupplier;
 import org.springframework.vault.client.VaultEndpoint;
+import org.springframework.vault.core.ReactiveVaultTemplate;
 import org.springframework.vault.core.VaultTemplate;
+import org.springframework.vault.support.VaultToken;
+
+import reactor.core.publisher.Mono;
 
 /**
  * This class defines and initializes {@link VaultTemplate} beans used to interact 
@@ -31,30 +37,42 @@ public class VaultConfiguration {
 	
 	@Value("${vault.token.users.read}")
 	private String readToken;
+		
+	private VaultEndpoint getVaultEndpoint() {
+		VaultEndpoint endpoint = VaultEndpoint.create(host, port);
+		endpoint.setScheme(scheme);
+		
+		return endpoint;
+	}
+
 	
-	private VaultEndpoint vaultEndpoint;
-	
+	// send requests via Reactor Netty
+	// default configuration
+	@Bean
+    ClientHttpConnector clientHttpConnector() {
+        return new ReactorClientHttpConnector();
+    }
+
 	/**
-	 * Creates a {@link VaultTemplate} bean to write into HashiCorp Vault. 
-	 * @return a configured {@link VaultTemplate}
+	 * Creates a {@link ReactiveVaultTemplate} bean to write into HashiCorp Vault. 
+	 * @return a configured {@link ReactiveVaultTemplate}
 	 */
 	@Bean("vaultWriterTemplate")
-	VaultTemplate vaultWriterTemplate() {
-		vaultEndpoint = VaultEndpoint.create(host, port);
-		vaultEndpoint.setScheme(scheme);
-		
-		return new VaultTemplate(vaultEndpoint, new TokenAuthentication(writeToken));
+	ReactiveVaultTemplate vaultWriterTemplate(ClientHttpConnector connector) {
+				
+		VaultTokenSupplier writeTokenSupplier = () -> Mono.just(VaultToken.of(writeToken));
+
+		return new ReactiveVaultTemplate(getVaultEndpoint(), connector, writeTokenSupplier);
 	}
 	
 	/**
-	 * Creates a {@link VaultTemplate} bean to read secrets from HashiCorp Vault. 
-	 * @return a configured {@link VaultTemplate}
+	 * Creates a {@link ReactiveVaultTemplate} bean to read secrets from HashiCorp Vault. 
+	 * @return a configured {@link ReactiveVaultTemplate}
 	 */
 	@Bean("vaultReaderTemplate")
-	VaultTemplate vaultReaderTemplate() {
-		vaultEndpoint = VaultEndpoint.create(host, port);
-		vaultEndpoint.setScheme(scheme);
+	ReactiveVaultTemplate vaultReaderTemplate(ClientHttpConnector connector) {
+		VaultTokenSupplier readerTokenSupplier = () -> Mono.just(VaultToken.of(readToken));
 		
-		return new VaultTemplate(vaultEndpoint, new TokenAuthentication(readToken));
+		return new ReactiveVaultTemplate(getVaultEndpoint(), connector, readerTokenSupplier);
 	}
 }
