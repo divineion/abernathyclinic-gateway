@@ -2,8 +2,11 @@ package com.medilabo.abernathyclinic.gateway.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.vault.core.ReactiveVaultTemplate;
 import org.springframework.vault.core.VaultTemplate;
 import org.springframework.vault.support.VaultResponse;
+
+import reactor.core.publisher.Mono;
 
 /**
  * Component responsible for reading secrets from HashiCorp Vault. 
@@ -13,9 +16,9 @@ import org.springframework.vault.support.VaultResponse;
  */
 @Component
 public class VaultSecretReader {
-	private final VaultTemplate vaultTemplate;
+	private final ReactiveVaultTemplate vaultTemplate;
 	
-	public VaultSecretReader(@Qualifier("vaultReaderTemplate") VaultTemplate vaultTemplate) {
+	public VaultSecretReader(@Qualifier("vaultReaderTemplate") ReactiveVaultTemplate vaultTemplate) {
 		this.vaultTemplate = vaultTemplate;
 	}
 	
@@ -23,7 +26,7 @@ public class VaultSecretReader {
 	 * Reads a secret from the provided Vault path.
 	 * @param path the Vault storage path
 	 */
-	public VaultResponse readSecret(String path) {
+	public Mono<VaultResponse> readSecret(String path) {
 		return vaultTemplate.read(path);
 	}
 }
