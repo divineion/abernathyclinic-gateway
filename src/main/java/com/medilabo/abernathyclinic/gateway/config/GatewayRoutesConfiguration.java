@@ -26,8 +26,21 @@ public class GatewayRoutesConfiguration {
         				// le filtre capture la valeur avec la regex
         				// puis injecte la valeur capturée dans le path du microservice
         				//  avec un named capturing group pour la lisibilité 
-        				.rewritePath("/patient/" + RegexConstants.UUID_PATTERN, "/api/patient/uuid/${uuid}"))
+        				.rewritePath("/patient/" + RegexConstants.PATIENT_UUID_PATTERN, 
+        						"/api/patient/uuid/${uuid}"))
         		.uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
 	        .build();
+	}
+	
+	@Bean
+	RouteLocator notesRoutes(RouteLocatorBuilder builder) {
+		return builder.routes()
+				.route("get_notes_by_patient_route", r -> r
+						.path("/notes/patient/{uuid}")
+						.filters(filter -> filter
+								.rewritePath("/notes/patient/" + RegexConstants.PATIENT_UUID_PATTERN, 
+										"/api/notes/patient/${uuid}"))
+						.uri(MicroservicesUriConstants.MICROSERVICE_NOTE_URI))
+				.build();
 	}
 }
