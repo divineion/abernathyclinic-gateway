@@ -41,6 +41,20 @@ public class GatewayRoutesConfiguration {
 								.rewritePath("/notes/patient/" + RegexConstants.PATIENT_UUID_PATTERN, 
 										"/api/notes/patient/${uuid}"))
 						.uri(MicroservicesUriConstants.MICROSERVICE_NOTE_URI))
+				
+				.route("get_note_by_id", r-> r
+						.path("/note/{objectId}")
+						.filters(filter -> filter
+							.rewritePath("/note/" + RegexConstants.OBJECT_ID_PATTERN,  
+							"/api/note/${objectId}"))
+						.uri(MicroservicesUriConstants.MICROSERVICE_NOTE_URI))
+				
+				.route("create_note", r -> r
+						.path("/note/patient/{uuid}")
+						.filters(filter -> filter
+								.rewritePath("/note/patient/" + RegexConstants.PATIENT_UUID_PATTERN, 
+										"/api/note/patient/${uuid}"))
+						.uri(MicroservicesUriConstants.MICROSERVICE_NOTE_URI))
 				.build();
 	}
 }
