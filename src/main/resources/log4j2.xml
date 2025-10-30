@@ -27,7 +27,7 @@
       <AppenderRef ref="ERROR"/>
     </Root>
     <!-- trafic et routage -->
-    <Logger name="org.springframework.cloud.gateway" level="INFO" additivity="false">
+    <Logger name="org.springframework.cloud.gateway" level="DEBUG" additivity="true">
       <AppenderRef ref="GATEWAY"/>
     </Logger>
     <!-- messages du code applicatif -->
