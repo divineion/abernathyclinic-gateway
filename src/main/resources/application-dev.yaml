@@ -11,6 +11,12 @@ spring:
                 allowed-methods: "GET,POST,PATCH,OPTIONS"
                 allowed-headers: "*"
                 maxAge: 3600
+logging:
+  level:
+     org: 
+      springframework: 
+        cloud: 
+          gateway: DEBUG
 # configuration properties for interacting with Vault
 vault:
   host: ${DEV_VAULT_ENDPOINT_HOST}
