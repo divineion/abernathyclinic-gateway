@@ -22,7 +22,7 @@ public class DevSecurityConfiguration {
         			.pathMatchers("/login").permitAll()
         			.anyExchange().authenticated()
 				)
-        		// username / mot de passe
+        		.csrf(csrf -> csrf.disable())
         		.httpBasic(Customizer.withDefaults())
 	        	.build();
     }
