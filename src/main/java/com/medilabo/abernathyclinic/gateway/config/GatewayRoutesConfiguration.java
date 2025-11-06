@@ -36,6 +36,14 @@ public class GatewayRoutesConfiguration {
 	        				.rewritePath("/patient", "/api/patient"))
 	        		.uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
 	        
+	        .route("update_patient_route", r -> r
+	        		.path("/patient/{uuid}/update")
+	        		.filters(filter -> filter
+	        				.rewritePath("/patient/" + RegexConstants.PATIENT_UUID_PATTERN + "/update", 
+	        						"/api/patient/${uuid}/update"))
+	        		
+	        		.uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
+	        
 	        .build();
 	}
 	

@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.vault.support.VaultResponse;
 
@@ -66,7 +64,7 @@ public class UserInitializer {
 	private String usersSecretBasePath;
 
 	@Bean
-	MapReactiveUserDetailsService initDemoUsers() throws JsonProcessingException {	
+	CustomMapReactiveUserDetailsService initDemoUsers() throws JsonProcessingException {	
 			//  create users
 		List<AppUser> users = new ArrayList<>();
 		LocalDateTime now = LocalDateTime.now();
@@ -132,7 +130,7 @@ public class UserInitializer {
 			6,	
 			UUID.randomUUID(),
 			"doctor3",
-			passwordEncoder.encode(doctor2Password),
+			passwordEncoder.encode(doctor3Password),
 			List.of(new SimpleGrantedAuthority("ROLE_DOCTOR")),
 			LocalDateTime.now(),
 			LocalDateTime.now()
@@ -144,10 +142,8 @@ public class UserInitializer {
 		for (AppUser user : users) {
 			storeUserSecrets(user).subscribe();
 		}
-		
-		List<UserDetails> userDetailsList = new ArrayList<>(users);
-		
-		return new MapReactiveUserDetailsService(userDetailsList);
+				
+		return new CustomMapReactiveUserDetailsService(users);
 	}
 
 	private Mono<Void> storeUserSecrets(AppUser user) throws JsonMappingException, JsonProcessingException {
