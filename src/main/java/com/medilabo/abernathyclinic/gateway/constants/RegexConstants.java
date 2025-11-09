@@ -22,4 +22,6 @@ public class RegexConstants {
 	 * <p>Defines the named capturing group: "objectId".</p>
 	 */
 	public static final String OBJECT_ID_PATTERN = "(?<objectId>[0-9a-fA-F]{24})";
+
+	public static final String ID_PATTERN = "(?<id>\\d+)";
 }
