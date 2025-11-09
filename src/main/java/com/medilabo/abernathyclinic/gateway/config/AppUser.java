@@ -7,8 +7,6 @@ import java.util.UUID;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 public class AppUser implements UserDetails {
 	private static final long serialVersionUID = 7089376405301370171L;
 	private final long id;
