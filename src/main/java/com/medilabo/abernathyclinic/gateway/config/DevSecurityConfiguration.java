@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
+import com.medilabo.abernathyclinic.gateway.config.filters.AuthenticatedUserGlobalFilter;
+
 
 @Configuration
 @Profile("dev")
@@ -38,5 +40,10 @@ public class DevSecurityConfiguration {
     @Bean
     PasswordEncoder passwordEncoder() {
     	return new BCryptPasswordEncoder();
+    }
+    
+    @Bean
+    AuthenticatedUserGlobalFilter authenticatedUserFilter() {
+    	return new AuthenticatedUserGlobalFilter();
     }
 }
