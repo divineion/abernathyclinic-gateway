@@ -87,4 +87,16 @@ public class GatewayRoutesConfiguration {
 						.uri(MicroservicesUriConstants.MICROSERVICE_NOTE_URI))
 				.build();
 	}
+	
+	@Bean
+	RouteLocator reportRoute(RouteLocatorBuilder builder) {
+		return builder.routes()	
+				.route("get_report_by_patient_uuid", r -> r
+						.path("/report/{uuid}")
+						.filters(filter -> filter
+								.rewritePath("/report/" + RegexConstants.PATIENT_UUID_PATTERN, 
+										"/api/report/${uuid}"))
+						.uri(MicroservicesUriConstants.MICROSERVICE_REPORT_URI))
+				.build();
+	}
 }
