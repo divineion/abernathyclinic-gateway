@@ -29,7 +29,7 @@ public class DevSecurityConfiguration {
                 		// puis envoyer le token avec chaque requête
                 		// en autorisant toutes requêtes OPTIONS 
 	        		.pathMatchers("/user").permitAll()
-	                .pathMatchers(HttpMethod.OPTIONS, "/user", "/patients", "/patient/**", "/notes/**", "/note/**").permitAll()
+	                .pathMatchers(HttpMethod.OPTIONS, "/user", "/patients", "/patient/**", "/notes/**", "/note/**", "/report/**").permitAll()
 	                .anyExchange().authenticated()
                 )
                 .csrf(csrf -> csrf.disable())
