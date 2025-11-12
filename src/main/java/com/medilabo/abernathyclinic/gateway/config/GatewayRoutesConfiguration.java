@@ -45,10 +45,10 @@ public class GatewayRoutesConfiguration {
 	        		.uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
 	        
 	        .route("get_patient_report_info", r -> r
-	        		.path("/patient/{uuid}/report-info)")
+	        		.path("/patient/{uuid}/report-info")
 	        		.filters(filter -> filter 
 	        				.rewritePath("/patient/" + RegexConstants.PATIENT_UUID_PATTERN + "/report-info", 
-	        						"/api/patient/{uuid}/report-info"))
+	        						"/api/patient/${uuid}/report-info"))
 	        		.uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
 
 	        .build();
