@@ -18,14 +18,9 @@ public class GatewayRoutesConfiguration {
 	            .filters(filter -> filter.rewritePath("/patients", "/api/patients"))
 	            .uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
 	      
-	        // https://cloud.spring.io/spring-cloud-gateway/multi/multi__configuration.html#_configuring_predicates_and_filters_for_discoveryclient_routes
 	        .route("get_patient_route", r -> r
-	        		// prédicat : ça matche si l'URL entrante suit ce modèle
         		.path("/patient/{uuid}")
         		.filters(filter -> filter
-        				// le filtre capture la valeur avec la regex
-        				// puis injecte la valeur capturée dans le path du microservice
-        				//  avec un named capturing group pour la lisibilité 
         				.rewritePath("/patient/" + RegexConstants.PATIENT_UUID_PATTERN, 
         						"/api/patient/uuid/${uuid}"))
         		.uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
@@ -92,6 +87,14 @@ public class GatewayRoutesConfiguration {
 								.rewritePath("/note/patient/" + RegexConstants.PATIENT_UUID_PATTERN, 
 										"/api/note/patient/${uuid}"))
 						.uri(MicroservicesUriConstants.MICROSERVICE_NOTE_URI))
+				
+				.route("get_notes_report_info", r -> r
+		        		.path("/notes/{uuid}/report-info")
+		        		.filters(filter -> filter 
+		        				.rewritePath("/notes/" + RegexConstants.PATIENT_UUID_PATTERN + "/report-info", 
+		        						"/api/notes/${uuid}/report-info"))
+		        		.uri(MicroservicesUriConstants.MICROSERVICE_NOTE_URI))
+				
 				.build();
 	}
 	
