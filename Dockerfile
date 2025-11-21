@@ -1,10 +1,13 @@
 # https://www.baeldung.com/ops/docker-entrypoint-environment-variables
 # this specifies the base image that the build will extend
 FROM eclipse-temurin:24-jre
-# WORKDIR <path> - this instruction specifies the "working directory" 
-# or the path in the image where files will be copied and commands will be executed
+
+LABEL description="API Gateway providing routing and authentication for AbernathyClinic Application"
 # create if not exists + définit le dossier courant dans l'image (les commandes seront exécutées depuis /app)
 WORKDIR /app
+#EXPOSE instruction doesn't actually publish the port. It functions as a type of documentation
+EXPOSE 8080
+
 #COPY <host-path> <image-path> - this instruction tells the builder to copy files from the host 
 # and put them into the container image --> copier le jar (fichier sur le host) dans l'image (le WORKDIR, /app)
 COPY ./target/abernathyclinic-gateway-0.0.1-SNAPSHOT.jar app.jar
@@ -13,8 +16,3 @@ COPY ./target/abernathyclinic-gateway-0.0.1-SNAPSHOT.jar app.jar
 # Exec Form : on spécifie la commande et les arguments dans un array
 # shell form --> pratique si on a besoin du shell mais nécessite un temps de lancement qui peut faire ouch
 ENTRYPOINT ["java", "-jar", "app.jar" ]
-
-#EXPOSE instruction doesn't actually publish the port. It functions as a type of documentation
-EXPOSE 8080
-
-LABEL description="API Gateway providing routing and authentication for AbernathyClinic Application"
