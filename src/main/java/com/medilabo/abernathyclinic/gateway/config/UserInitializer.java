@@ -27,7 +27,7 @@ import reactor.core.publisher.Mono;
  * This configuration class initializes in-memory demo users and stores their credentials
  *  in Vault server at application startup. 
  */
-@Profile("dev")
+@Profile({"dev", "docker"})
 @Configuration
 public class UserInitializer {
 	private static final Logger logger = LogManager.getLogger(UserInitializer.class);

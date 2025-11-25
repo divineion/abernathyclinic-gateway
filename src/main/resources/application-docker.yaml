@@ -1,0 +1,20 @@
+logging:
+  level:
+     org: 
+      springframework: 
+        cloud: 
+          gateway: DEBUG
+
+
+# configuration properties for interacting with Vault
+vault:
+  host: ${DOCKER_VAULT_ENDPOINT_HOST}
+  port: ${DOCKER_VAULT_ENDPOINT_PORT}
+  scheme: ${DOCKER_VAULT_ENDPOINT_SCHEME}
+  token :
+    users:
+      write: ${DOCKER_SPRING_USER_CREATOR_VAULT_TOKEN}
+      read: ${DOCKER_SPRING_USER_READER_VAULT_TOKEN}
+  kv:
+    backend: secret
+    path: ${DOCKER_VAULT_USERS_KV_PATH}

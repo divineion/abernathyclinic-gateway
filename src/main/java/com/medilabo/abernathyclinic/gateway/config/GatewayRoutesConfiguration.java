@@ -1,35 +1,45 @@
 package com.medilabo.abernathyclinic.gateway.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.medilabo.abernathyclinic.gateway.constants.MicroservicesUriConstants;
 import com.medilabo.abernathyclinic.gateway.constants.RegexConstants;
 
 @Configuration
 public class GatewayRoutesConfiguration {
+	@Value("${patient.service.url}")
+	private String patientServiceUri;
+	 
+	 @Value("${notes.service.url}")
+	private String notesServiceUri;
+	 
+	 @Value("${report.service.url}")
+	private String reportServiceUri;
+
+	
 	@Bean
 	RouteLocator patientRoutes(RouteLocatorBuilder builder) {
 	    return builder.routes()
 	        .route("get_patients_route", r -> r
 	            .path("/patients")
 	            .filters(filter -> filter.rewritePath("/patients", "/api/patients"))
-	            .uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
+	            .uri(patientServiceUri))
 	      
 	        .route("get_patient_route", r -> r
         		.path("/patient/{uuid}")
         		.filters(filter -> filter
         				.rewritePath("/patient/" + RegexConstants.PATIENT_UUID_PATTERN, 
         						"/api/patient/uuid/${uuid}"))
-        		.uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
+        		.uri(patientServiceUri))
 	        
 	        .route("create_patient_route", r -> r 
 	        		.path("/patient")
 	        		.filters(filter -> filter
 	        				.rewritePath("/patient", "/api/patient"))
-	        		.uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
+	        		.uri(patientServiceUri))
 	        
 	        .route("update_patient_route", r -> r
 	        		.path("/patient/{uuid}/update")
@@ -37,14 +47,14 @@ public class GatewayRoutesConfiguration {
 	        				.rewritePath("/patient/" + RegexConstants.PATIENT_UUID_PATTERN + "/update", 
 	        						"/api/patient/${uuid}/update"))
 	        		
-	        		.uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
+	        		.uri(patientServiceUri))
 	        
 	        .route("get_patient_report_info", r -> r
 	        		.path("/patient/{uuid}/report-info")
 	        		.filters(filter -> filter 
 	        				.rewritePath("/patient/" + RegexConstants.PATIENT_UUID_PATTERN + "/report-info", 
 	        						"/api/patient/${uuid}/report-info"))
-	        		.uri(MicroservicesUriConstants.MICROSERVICE_PATIENT_URI))
+	        		.uri(patientServiceUri))
 
 	        .build();
 	}
@@ -57,21 +67,21 @@ public class GatewayRoutesConfiguration {
 						.filters(filter -> filter
 								.rewritePath("/notes/patient/" + RegexConstants.PATIENT_UUID_PATTERN, 
 										"/api/notes/patient/${uuid}"))
-						.uri(MicroservicesUriConstants.MICROSERVICE_NOTE_URI))
+						.uri(notesServiceUri))
 				
 				.route("get_note_by_id", r-> r
 						.path("/note/{objectId}")
 						.filters(filter -> filter
 							.rewritePath("/note/" + RegexConstants.OBJECT_ID_PATTERN,  
 							"/api/note/${objectId}"))
-						.uri(MicroservicesUriConstants.MICROSERVICE_NOTE_URI))
+						.uri(notesServiceUri))
 				
 				.route("get_note_by_doctor_id", r -> r
 						.path("/notes/doctor/{id}")
 						.filters(filter -> filter
 								.rewritePath("/notes/doctor/" + RegexConstants.ID_PATTERN, 
 										"/api/notes/doctor/${id}"))
-						.uri(MicroservicesUriConstants.MICROSERVICE_NOTE_URI))
+						.uri(notesServiceUri))
 				
 
 				.route("update_note_by_id", r-> r
@@ -79,21 +89,21 @@ public class GatewayRoutesConfiguration {
 						.filters(filter -> filter
 								.rewritePath("/note/" + RegexConstants.OBJECT_ID_PATTERN + "/update",  
 										"/api/note/${objectId}/update"))
-						.uri(MicroservicesUriConstants.MICROSERVICE_NOTE_URI))
+						.uri(notesServiceUri))
 				
 				.route("create_note", r -> r
 						.path("/note/patient/{uuid}")
 						.filters(filter -> filter
 								.rewritePath("/note/patient/" + RegexConstants.PATIENT_UUID_PATTERN, 
 										"/api/note/patient/${uuid}"))
-						.uri(MicroservicesUriConstants.MICROSERVICE_NOTE_URI))
+						.uri(notesServiceUri))
 				
 				.route("get_notes_report_info", r -> r
 		        		.path("/notes/{uuid}/report-info")
 		        		.filters(filter -> filter 
 		        				.rewritePath("/notes/" + RegexConstants.PATIENT_UUID_PATTERN + "/report-info", 
 		        						"/api/notes/${uuid}/report-info"))
-		        		.uri(MicroservicesUriConstants.MICROSERVICE_NOTE_URI))
+		        		.uri(notesServiceUri))
 				
 				.build();
 	}
@@ -106,7 +116,7 @@ public class GatewayRoutesConfiguration {
 						.filters(filter -> filter
 								.rewritePath("/report/" + RegexConstants.PATIENT_UUID_PATTERN, 
 										"/api/report/${uuid}"))
-						.uri(MicroservicesUriConstants.MICROSERVICE_REPORT_URI))
+						.uri(reportServiceUri))
 				.build();
 	}
 }
