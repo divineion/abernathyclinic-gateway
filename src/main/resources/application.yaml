@@ -1,3 +1,4 @@
+# GatewayAutoConfiguration instancie un bean de type GlobalCoresProperies qui contiendra la configuration CORS
 spring:
   application:
     name:
@@ -7,3 +8,28 @@ spring:
     time-zone: Europe/Paris
     serialization:
       write-dates-as-timestamps: false
+  cloud:
+      gateway:
+        server:
+          webflux:
+            globalcors:
+              cors-configurations: 
+                '[/**]':
+                  allowed-origins: "http://localhost:5173, http://localhost:5174"
+                  allowed-methods: "GET,POST,PATCH,OPTIONS"
+                  allowed-headers: "*"
+                  maxAge: 3600
+
+patient:
+  service:
+    url: ${MICROSERVICE_PATIENT_URI:http://localhost:8081}
+
+notes:
+  service:
+    url: ${MICROSERVICE_NOTES_URI:http://localhost:8083}
+
+report:
+  service:
+    url: ${MICROSERVICE_REPORT_URI:http://localhost:8084}
+
+  
