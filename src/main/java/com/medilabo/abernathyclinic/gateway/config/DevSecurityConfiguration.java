@@ -17,7 +17,7 @@ import com.medilabo.abernathyclinic.gateway.config.filters.AuthenticatedUserGlob
 
 
 @Configuration
-@Profile("dev")
+@Profile({"dev", "docker"})
 public class DevSecurityConfiguration {
 
 	@Bean
