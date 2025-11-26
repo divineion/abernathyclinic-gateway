@@ -92,5 +92,5 @@ integration-job:
       -e TEST_SPRING_USER_READER_VAULT_TOKEN=$TEST_SPRING_USER_READER_VAULT_TOKEN \
       divineion/microservice-gateway:$CI_COMMIT_REF_SLUG
     - docker ps
-    - docker logs gateway-container
+    - mvn clean verify
     - docker stop gateway-container
