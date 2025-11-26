@@ -7,7 +7,6 @@ variables:
 stages:          # List of stages for jobs, and their order of execution
   - build
   - test
-  - verify
   - package
   - image
   - integration-test
@@ -38,12 +37,6 @@ test-job:
   stage: test
   script:
     - mvn clean test
-
-# tests d'intégration
-verify-job:
-  stage: verify
-  script:
-    - mvn clean verify
 
 # création du JAR
 package-job: 
