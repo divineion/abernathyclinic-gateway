@@ -67,6 +67,10 @@ image-job:
     - docker push divineion/microservice-gateway:$CI_COMMIT_REF_SLUG
 
 integration-job: 
+# pointer vers le daemon Docker dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
   services:
   - docker:dind
   stage: integration-test
