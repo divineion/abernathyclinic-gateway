@@ -89,4 +89,3 @@ integration-job:
     - docker ps
     - mvn clean verify
     - docker stop patient-container
-	  
