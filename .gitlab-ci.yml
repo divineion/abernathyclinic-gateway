@@ -1,4 +1,4 @@
-image: maven:3.9.10-eclipse-temurin-24
+image: maven:3.9.10-eclipse-temurin-24-alpine
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository" # absolute path to local repository, will be used to installe xternal libs
