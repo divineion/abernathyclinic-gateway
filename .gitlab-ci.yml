@@ -9,6 +9,7 @@ stages:          # List of stages for jobs, and their order of execution
   - test
   - package
   - image
+  - integration-test
 
 cache:            # jobs that use the same cache don’t have to download the files again
   paths:
@@ -89,4 +90,3 @@ integration-job:
     - docker ps
     - mvn clean verify
     - docker stop patient-container
-	  
