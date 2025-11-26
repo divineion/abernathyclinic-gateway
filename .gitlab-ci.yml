@@ -64,3 +64,29 @@ image-job:
   script: 
     - docker build -t divineion/microservice-gateway:$CI_COMMIT_REF_SLUG .
     - docker push divineion/microservice-gateway:$CI_COMMIT_REF_SLUG
+
+integration-job: 
+  services:
+  - docker:dind
+  stage: integration-test
+  dependencies:
+    - image-job
+  before_script: apk add --no-cache docker-cli 
+  script: 
+# lancer le conteneur en mode détaché pour libérer le terminal et exécuter les tests avec Maven
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - docker pull divineion/microservice-gateway:$CI_COMMIT_REF_SLUG
+    - |
+      docker run -d --name gateway-container --rm \
+      -Dspring.profiles.active=test \
+      -DTEST_VAULT_ENDPOINT_HOST=$TEST_VAULT_ENDPOINT_HOST \
+      -DTEST_VAULT_ENDPOINT_SCHEME=$TEST_VAULT_ENDPOINT_SCHEME \
+      -DTEST_VAULT_ENDPOINT_PORT=$TEST_VAULT_ENDPOINT_PORT \
+      -DTEST_VAULT_USERS_KV_PATH=$TEST_VAULT_USERS_KV_PATH \
+      -DTEST_SPRING_USER_CREATOR_VAULT_TOKEN=$TEST_SPRING_USER_CREATOR_VAULT_TOKEN \
+      -DTEST_SPRING_USER_READER_VAULT_TOKEN=$TEST_SPRING_USER_READER_VAULT_TOKEN \
+      divineion/microservice-gateway:$CI_COMMIT_REF_SLUG
+    - docker ps
+    - mvn clean verify
+    - docker stop patient-container
+	  
