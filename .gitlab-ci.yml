@@ -7,6 +7,7 @@ variables:
 stages:          # List of stages for jobs, and their order of execution
   - build
   - test
+  - verify
   - package
   - image
   - integration-test
@@ -37,6 +38,12 @@ test-job:
   stage: test
   script:
     - mvn clean test
+
+# tests d'intégration
+verify-job:
+  stage: verify
+  script:
+    - mvn clean verify
 
 # création du JAR
 package-job: 
@@ -92,5 +99,5 @@ integration-job:
       -e TEST_SPRING_USER_READER_VAULT_TOKEN=$TEST_SPRING_USER_READER_VAULT_TOKEN \
       divineion/microservice-gateway:$CI_COMMIT_REF_SLUG
     - docker ps
-    - mvn clean verify
+    - docker logs gateway-container
     - docker stop gateway-container
