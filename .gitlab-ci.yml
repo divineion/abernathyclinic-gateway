@@ -1,0 +1,66 @@
+image: maven:3.9.10-eclipse-temurin-24
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository" # absolute path to local repository, will be used to installe xternal libs
+  SPRING_PROFILES_ACTIVE: test
+
+stages:          # List of stages for jobs, and their order of execution
+  - build
+  - test
+  - package
+  - image
+
+cache:            # jobs that use the same cache don’t have to download the files again
+  paths:
+    - .m2/repository
+  key: "$CI_COMMIT_REF_SLUG" # all commits from the same branch will share the cache
+
+# build du projet
+build-job:
+  stage: build
+  script:
+    - |
+      mvn -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository \
+      -Dspring.profiles.active=test \
+      -DTEST_VAULT_ENDPOINT_HOST=$TEST_VAULT_ENDPOINT_HOST \
+      -DTEST_VAULT_ENDPOINT_SCHEME=$TEST_VAULT_ENDPOINT_SCHEME \
+      -DTEST_VAULT_ENDPOINT_PORT=$TEST_VAULT_ENDPOINT_PORT \
+      -DTEST_VAULT_USERS_KV_PATH=$TEST_VAULT_USERS_KV_PATH \
+      -DTEST_SPRING_USER_CREATOR_VAULT_TOKEN=$TEST_SPRING_USER_CREATOR_VAULT_TOKEN \
+      -DTEST_SPRING_USER_READER_VAULT_TOKEN=$TEST_SPRING_USER_READER_VAULT_TOKEN \
+      clean compile \
+      --batch-mode --errors --fail-at-end --show-version
+
+# tests unitaires
+test-job:
+  stage: test
+  script:
+    - mvn clean test
+
+# création du JAR
+package-job: 
+  stage: package
+  script:
+    - mvn clean package --batch-mode --fail-at-end
+  artifacts:
+    paths:
+      - target/*.jar
+    name: "microservice-gateway-jar-artifacts"
+
+# build de l'image Docker
+# le job tourne dans un conteneur avec Docker CLI
+image-job: 
+  stage: image
+  image: docker:latest
+  # récupérer le JAR issu du package-job
+  dependencies:
+  - package-job
+  # fournit le daemon Docker qui exécute les conteneurs générés par les commandes des jobs
+  services:
+    - docker:dind
+  # objectif : tester si le Dockerfile est correct / l’image peut être créée
+  # echo pour transmettre le token Docker Hub au processus docker login
+  before_script: echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  script: 
+    - docker build -t divineion/microservice-gateway:$CI_COMMIT_REF_SLUG .
+    - docker push divineion/microservice-gateway:$CI_COMMIT_REF_SLUG
