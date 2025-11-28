@@ -23,14 +23,8 @@ public class DevSecurityConfiguration {
 	@Bean
 	SecurityWebFilterChain filterChain(ServerHttpSecurity serverHttpSecurity) throws Exception {   	
     	return serverHttpSecurity
-                // configurer les autorisations
                 .cors(Customizer.withDefaults())
                 .authorizeExchange(exchange -> exchange
-	                // authoriser les requêtes preflights sans authentification
-	                // sans quoi elle seront bloquées par Spring Security au moment de vérifier la politique CORS
-                		// autoriser la requêet au endpoint user -> set le login en front
-                		// puis envoyer le token avec chaque requête
-                		// en autorisant toutes requêtes OPTIONS 
 	        		.pathMatchers("/user").permitAll()
 	                .pathMatchers(HttpMethod.OPTIONS, "/user", "/patients", "/patient/**", "/notes/**", "/note/**", "/report/**").permitAll()
 	                .anyExchange().authenticated()
