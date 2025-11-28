@@ -36,7 +36,6 @@ public class GatewayRoutingIT {
 	WireMockServer notesMock;
 	WireMockServer reportMock;
 		
-	// démarrer un WireMockServer avant chaque test et faire pointer vers les ports configurés
 	@BeforeEach
     void setup() {
         webTestClient = WebTestClient.bindToServer()
@@ -63,14 +62,12 @@ public class GatewayRoutingIT {
 	void testGetPatientRoute() {
 	    String uuid = "123e4567-e89b-12d3-a456-426614174000";
 
-	    // Stub du microservice
 	    patientMock.stubFor(get("/api/patient/" + uuid)
 	            .willReturn(aResponse()
 	                .withStatus(200)
 	                .withHeader("Content-Type", "application/json")
 	                .withBody("{\"id\":\"" + uuid + "\",\"name\":\"John Doe\"}")));
 
-	    // Appel via le Gateway
 	    webTestClient.get()
 	        .uri("/patient/{uuid}", uuid) 
 	        .exchange()
