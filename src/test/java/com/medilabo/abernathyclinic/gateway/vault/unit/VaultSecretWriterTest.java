@@ -19,6 +19,15 @@ import com.medilabo.abernathyclinic.gateway.config.VaultSecretWriter;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+/**
+ * Unit tests for {@link VaultSecretWriter}.
+ *
+ * <p>
+ * Verifies that {@link VaultSecretWriter#writeSecret(String, Map)} writes data using the mocked
+ * {@link ReactiveVaultTemplate} and immediately reads it back using the read template.
+ * StepVerifier is used to assert that the returned {@link Mono} emits the expected data and completes.
+ * </p>
+ */
 @ExtendWith(MockitoExtension.class)
 public class VaultSecretWriterTest {
 	@Mock

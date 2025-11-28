@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.vault.core.ReactiveVaultTemplate;
 import org.springframework.vault.support.VaultResponse;
 
@@ -19,7 +18,15 @@ import com.medilabo.abernathyclinic.gateway.config.VaultSecretReader;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-@ActiveProfiles("test")
+/**
+ * Unit tests for {@link VaultSecretReader}.
+ *
+ * <p>
+ * Verifies that {@link VaultSecretReader#readSecret(String)} correctly returns a {@link Mono}
+ * containing a {@link VaultResponse} from the mocked {@link ReactiveVaultTemplate}.
+ * Uses StepVerifier to assert the emitted data and completion signal.
+ * </p>
+ */
 @ExtendWith(MockitoExtension.class)
 public class VaultSecretReaderTest {
 	@Mock

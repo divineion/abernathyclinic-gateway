@@ -24,9 +24,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import reactor.core.publisher.Mono;
 
 /**
- * This configuration class initializes in-memory demo users and stores their credentials
- *  in Vault server at application startup. 
- */
+* Initializes demo users in the system for development and Docker profiles.
+*
+* <p>This class :
+* <ul>
+*   <li>creates in-memory demo users with "ROLE_ORGANIZER" or "ROLE_DOCTOR"</li>
+*   <li>encodes user passwords using the configured {@link PasswordEncoder}</li>
+*   <li>stores user credentials in Vault using {@link VaultSecretWriter}</li>
+*   <li>exposes a {@link CustomMapReactiveUserDetailsService} bean for Spring Security</li>
+* </ul>
+*/
 @Profile({"dev", "docker"})
 @Configuration
 public class UserInitializer {

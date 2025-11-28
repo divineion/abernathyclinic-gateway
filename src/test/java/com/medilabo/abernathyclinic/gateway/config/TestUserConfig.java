@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * Provides in-memory demo users for security tests.
+ */
 @TestConfiguration
 public class TestUserConfig {
 

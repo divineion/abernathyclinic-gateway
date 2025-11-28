@@ -11,7 +11,8 @@ import reactor.core.publisher.Mono;
 /**
  * Component responsible for reading secrets from HashiCorp Vault. 
  * <p>
- * This component uses the {@link VaultTemplate} provided by {@link VaultConfiguration}.
+ * 	Uses the {@link VaultTemplate} provided by {@link VaultConfiguration}.
+ * 	All operations are non-blocking and return a {@link Mono} wrapping a {@link VaultResponse}.
  * </p>
  */
 @Component
@@ -25,6 +26,7 @@ public class VaultSecretReader {
 	/**
 	 * Reads a secret from the provided Vault path.
 	 * @param path the Vault storage path
+	 * @return a {@link Mono} emitting the {@link VaultResponse} if present, empty otherwise
 	 */
 	public Mono<VaultResponse> readSecret(String path) {
 		return vaultTemplate.read(path);

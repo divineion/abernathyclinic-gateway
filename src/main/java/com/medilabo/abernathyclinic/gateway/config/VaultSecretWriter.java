@@ -12,7 +12,9 @@ import reactor.core.publisher.Mono;
 /**
  * Component responsible for writing secrets into HashiCorp Vault. 
  * <p>
- * This component uses the {@link ReactiveVaultTemplate} provided by {@link VaultConfiguration}.
+ * 	This component uses the {@link ReactiveVaultTemplate} provided by {@link VaultConfiguration}.
+ * 	After writing a secret, it reads the same secret back to verify the operation.
+ * 	All operations are non-blocking and return a {@link Mono} wrapping a {@link VaultResponse}.
  * </p>
  */
 @Component

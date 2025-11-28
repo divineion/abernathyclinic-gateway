@@ -15,7 +15,12 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import com.medilabo.abernathyclinic.gateway.config.filters.AuthenticatedUserGlobalFilter;
 
-
+/**
+ * Security configuration used in "dev" and "docker" profiles.
+ *
+ * This configuration protects sensible routes behind Basic Authentication. 
+ * It also configures CORS for local frontend development.
+ */
 @Configuration
 @Profile({"dev", "docker"})
 public class DevSecurityConfiguration {

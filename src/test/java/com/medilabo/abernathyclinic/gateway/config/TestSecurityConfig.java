@@ -9,6 +9,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
+/**
+ * Test security configuration for the Gateway.
+ *
+ * Allows all requests except "/user" which requires authentication,
+ * and provides a PasswordEncoder bean for password handling.
+ */
 @TestConfiguration
 public class TestSecurityConfig {
 

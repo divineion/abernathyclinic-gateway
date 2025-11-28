@@ -8,18 +8,20 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.vault.authentication.VaultTokenSupplier;
 import org.springframework.vault.client.VaultEndpoint;
 import org.springframework.vault.core.ReactiveVaultTemplate;
-import org.springframework.vault.core.VaultTemplate;
 import org.springframework.vault.support.VaultToken;
 
 import reactor.core.publisher.Mono;
 
 /**
- * This class defines and initializes {@link VaultTemplate} beans used to interact 
- * with HashiCorp Vault service. 
- * <p>
- * Retrieves Vault connection parameters (host, port, scheme and token) from
- * the application properties and configures a {@link VaultTemplate}. 
- * </p>
+ * Configuration class to interact with HashiCorp Vault. 
+ * Provides bean to read and write secrets using {@link ReactiveVaultTemplate} 
+ * 
+ * Beans:
+ * <ul>
+ *   <li>{@code vaultWriterTemplate} — configured to write secrets using a write token</li>
+ *   <li>{@code vaultReaderTemplate} — configured to read secrets using a read token</li>
+ *   <li>{@link ClientHttpConnector} — used by the ReactiveVaultTemplates for HTTP communication</li>
+ * </ul>
  */
 @Configuration
 public class VaultConfiguration {
@@ -45,16 +47,13 @@ public class VaultConfiguration {
 		return endpoint;
 	}
 
-	
-	// send requests via Reactor Netty
-	// default configuration
 	@Bean
     ClientHttpConnector clientHttpConnector() {
         return new ReactorClientHttpConnector();
     }
 
 	/**
-	 * Creates a {@link ReactiveVaultTemplate} bean to write into HashiCorp Vault. 
+	 * Creates a {@link ReactiveVaultTemplate} bean to write secrets into HashiCorp Vault. 
 	 * @return a configured {@link ReactiveVaultTemplate}
 	 */
 	@Bean("vaultWriterTemplate")

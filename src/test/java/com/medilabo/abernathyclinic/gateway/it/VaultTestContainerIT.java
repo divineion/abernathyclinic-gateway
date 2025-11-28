@@ -21,6 +21,17 @@ import com.medilabo.abernathyclinic.gateway.config.VaultSecretWriter;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+/**
+ * Integration tests for Vault read/write operations using {@link Testcontainers}.
+ *
+ * <p>
+ * Starts a Vault container and injects its host, port, and tokens into Spring context.
+ * Tests that {@link VaultSecretReader} can read secrets correctly and 
+ * {@link VaultSecretWriter} can write secrets and verify them immediately.
+ * Uses StepVerifier to validate reactive responses.
+ * </p>
+ */
+
 @Profile("test")
 @SpringBootTest
 @ActiveProfiles("test")
@@ -37,16 +48,13 @@ public class VaultTestContainerIT {
 	private static String CLI_USERNAME = "Testcli";
 	private final static String CLI_PASSWORD = "CLIpassword123";
 	
-	// désactiver le secret engine
-	// argument corresponds to the enabled PATH of the engine, not the TYPE!
 	private static final String disableSecretEngine = "secrets disable secret";
-	// le réactiver
 	private static final String reinitSecretEngine =  "secrets enable -version=1 -path=secret kv";
-	// écrire deux secrets
+	
 	private static final String writeTestSecret = "kv put " + PATH + CLI_USERNAME + " password=" + CLI_PASSWORD + " username=" + CLI_USERNAME;
 	
 	
-	@Container // déclare le testcontainer - il sera démarré avant que spring ne commence à construire le context
+	@Container
 	public static final VaultContainer<?> vaultContainer = new VaultContainer<>(VAULT_IMAGE_VERSION)
     .withVaultToken(TEST_TOKEN)
     .withInitCommand(
@@ -61,7 +69,6 @@ public class VaultTestContainerIT {
 	@Autowired
 	private VaultSecretWriter vaultSecretWriter;
 	
-	// injecter les valeurs des propriétés du container dans le context spring avant le démarrage de l'application
 	@DynamicPropertySource
 	static void vaultProperties(DynamicPropertyRegistry registry) {
 		registry.add("vault.host", vaultContainer::getHost);
@@ -71,8 +78,6 @@ public class VaultTestContainerIT {
 		registry.add("vault.backend.kv.version", () -> 1);
 	}
 	
-	//PrematureCloseException: Connection prematurely closed BEFORE response
-	// https://projectreactor.io/docs/netty/1.0.21/reference/index.html#_timeout_configuration
 	@Test
 	public void readSecretTest() {
 		Map<String, Object> expectedData = Map.of("username", CLI_USERNAME, "password", CLI_PASSWORD);
@@ -80,9 +85,7 @@ public class VaultTestContainerIT {
 		Mono<Map<String, Object>> data = vaultSecretReader.readSecret(PATH + CLI_USERNAME)
 		.map(VaultResponse::getData);
 		
-		// j'utilise StepVerifier pour récupérer les données
 		StepVerifier.create(data)
-		// je vérifie que la méthode onNext retourne bien les bonnes données
 			.expectNext(expectedData)
 			.verifyComplete();
 	}
@@ -94,10 +97,7 @@ public class VaultTestContainerIT {
         Mono<Map<String, Object>> data = vaultSecretWriter.writeSecret(PATH + USERNAME, expectedData)
         		.map(VaultResponse::getData);
         
-        //assertEquals(testData, response.getData());
-        // StepVerfieir s'abonne au Publisher retourné
         StepVerifier.create(data)
-        // vérifie que l'élément reçu est égal expectedData
         .expectNext(expectedData)
         .verifyComplete();
 	}
