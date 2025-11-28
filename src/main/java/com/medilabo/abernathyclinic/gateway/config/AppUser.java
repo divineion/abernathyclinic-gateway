@@ -2,7 +2,6 @@ package com.medilabo.abernathyclinic.gateway.config;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +23,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class AppUser implements UserDetails {
 	private static final long serialVersionUID = 7089376405301370171L;
 	private final long id;
-	private final UUID uuid;
     private final String username;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
@@ -33,9 +31,8 @@ public class AppUser implements UserDetails {
     
     private final LocalDateTime updatedAt;
 	
-	public AppUser(long id, UUID uuid, String username, String password, Collection<? extends GrantedAuthority> authorities, LocalDateTime createdAt, LocalDateTime updatedAt) {
+	public AppUser(long id, String username, String password, Collection<? extends GrantedAuthority> authorities, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
-		this.uuid = uuid;
 		this.username = username;
 		this.password = password;
 		this.authorities = authorities;
@@ -45,10 +42,6 @@ public class AppUser implements UserDetails {
 
 	public long getId() {
 		return id;
-	}
-
-	public UUID getUuid() {
-		return uuid;
 	}
 	
 	@Override
