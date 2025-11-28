@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -78,7 +77,6 @@ public class UserInitializer {
 		
 		AppUser organizer1 = new AppUser(
 			1,	
-			UUID.randomUUID(),
 			"organizer1",
 			passwordEncoder.encode(organizer1Password),
 			List.of(new SimpleGrantedAuthority("ROLE_ORGANIZER")),
@@ -89,7 +87,6 @@ public class UserInitializer {
 		
 		AppUser organizer2 = new AppUser(
 			2,	
-			UUID.randomUUID(),
 			"organizer2",
 			passwordEncoder.encode(organizer2Password),
 			List.of(new SimpleGrantedAuthority("ROLE_ORGANIZER")),
@@ -100,7 +97,6 @@ public class UserInitializer {
 		
 		AppUser organizer3 = new AppUser(
 			3,	
-			UUID.randomUUID(),
 			"organizer3",
 			passwordEncoder.encode(organizer3Password),
 			List.of(new SimpleGrantedAuthority("ROLE_ORGANIZER")),
@@ -111,7 +107,6 @@ public class UserInitializer {
 		
 		AppUser doctor1 = new AppUser(
 			4,	
-			UUID.randomUUID(),
 			"doctor1",
 			passwordEncoder.encode(doctor1Password),
 			List.of(new SimpleGrantedAuthority("ROLE_DOCTOR")),
@@ -122,7 +117,6 @@ public class UserInitializer {
 		
 		AppUser doctor2 = new AppUser(
 			5,	
-			UUID.randomUUID(),
 			"doctor2",
 			passwordEncoder.encode(doctor2Password),
 			List.of(new SimpleGrantedAuthority("ROLE_DOCTOR")),
@@ -133,7 +127,6 @@ public class UserInitializer {
 		
 		AppUser doctor3 = new AppUser(
 			6,	
-			UUID.randomUUID(),
 			"doctor3",
 			passwordEncoder.encode(doctor3Password),
 			List.of(new SimpleGrantedAuthority("ROLE_DOCTOR")),
