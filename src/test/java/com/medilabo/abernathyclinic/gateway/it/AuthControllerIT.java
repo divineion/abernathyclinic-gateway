@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import com.medilabo.abernathyclinic.gateway.config.AppUser;
 import com.medilabo.abernathyclinic.gateway.config.TestSecurityConfig;
 import com.medilabo.abernathyclinic.gateway.config.TestUserConfig;
 
@@ -16,10 +15,14 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 
 /**
- * Integration tests for AuthController /user endpoint.
- * 
- * Uses real HTTP server, with {@link TestSecurityConfig} and {@link TestUserConfig}.
- * Tests Basic Auth with real {@link AppUser} objects (id, username, roles).
+ * Integration tests for the /user endpoint of {@link AuthController}.
+ *
+ * <p>
+ * Verifies authentication via Basic Auth for in-memory test users defined in 
+ * {@link TestUserConfig} with security rules from {@link TestSecurityConfig}.
+ * Tests include successful access for organizers and doctors, as well as 
+ * unauthorized access scenarios (wrong password, unknown user, no credentials).
+ * </p>
  */
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = RANDOM_PORT)

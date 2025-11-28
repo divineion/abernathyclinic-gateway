@@ -7,12 +7,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
+/**
+ * Test configuration class. 
+ * 
+ * Disables security and allows all requests.
+ * Defines test routes that redirect requests to local backend services
+ * for Patient, Notes, and Report micro-services.
+ */
 @TestConfiguration
 public class TestRoutingSecurityConfig {
 	@Bean
     RouteLocator testRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
-    		// la route exacte en priorité
             .route("patient_create_route", r -> r.path("/patient")
         		.filters(f -> f.rewritePath("/patient", "/api/patient"))
         		.uri("http://localhost:8097"))

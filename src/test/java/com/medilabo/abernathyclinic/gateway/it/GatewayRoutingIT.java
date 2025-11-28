@@ -18,10 +18,10 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.medilabo.abernathyclinic.gateway.config.TestRoutingSecurityConfig;
 
 /**
- * Tests the API Gateway routing.
- * Checks that public URLs are correctly routed to microservices.
+ * Integration tests for the API Gateway routing.
+ * Verifies that public URLs are correctly routed to micro-services.
  * Verifies path rewriting, headers, and body forwarding work correctly.
- * Uses WireMock servers to simulate Patient, Notes, and Report microservices.
+ * Uses WireMock servers to simulate Patient, Notes, and Report micro-services.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")

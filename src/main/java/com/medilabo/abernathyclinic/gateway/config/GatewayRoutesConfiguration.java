@@ -8,6 +8,29 @@ import org.springframework.context.annotation.Configuration;
 
 import com.medilabo.abernathyclinic.gateway.constants.RegexConstants;
 
+/**
+ * Configures routes for Spring Cloud Gateway.
+ * 
+ * <p>This class defines how incoming HTTP requests to the gateway are routed to the
+ * appropriate micro-services: Patient, Notes, and Report.</p>
+ * 
+ * <p>
+ * <ul>
+ *   <li>routes requests to backend micro-services based on path patterns</li>
+ *   <li>rewrites paths to match the endpoints expected by the target micro-service</li>
+ *   <li>supports route parameters using regex constants for UUIDs and object IDs</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>Provides three RouteLocator beans:
+ * <ul>
+ *   <li>{@link #patientRoutes(RouteLocatorBuilder)} - routes for patient service</li>
+ *   <li>{@link #notesRoutes(RouteLocatorBuilder)} - routes for notes service</li>
+ *   <li>{@link #reportRoute(RouteLocatorBuilder)} - routes for report service</li>
+ * </ul>
+ * </p>
+ * 
+ */
 @Configuration
 public class GatewayRoutesConfiguration {
 	@Value("${patient.service.url}")
@@ -19,7 +42,6 @@ public class GatewayRoutesConfiguration {
 	 @Value("${report.service.url}")
 	private String reportServiceUri;
 
-	
 	@Bean
 	RouteLocator patientRoutes(RouteLocatorBuilder builder) {
 	    return builder.routes()
@@ -103,8 +125,7 @@ public class GatewayRoutesConfiguration {
 		        		.filters(filter -> filter 
 		        				.rewritePath("/notes/" + RegexConstants.PATIENT_UUID_PATTERN + "/report-info", 
 		        						"/api/notes/${uuid}/report-info"))
-		        		.uri(notesServiceUri))
-				
+		        		.uri(notesServiceUri))		
 				.build();
 	}
 	

@@ -17,7 +17,7 @@ import com.medilabo.abernathyclinic.gateway.config.AppUser;
 import reactor.core.publisher.Mono;
 
 /**
- * Add authenticated user info to downstream requests.
+ * Propagate authenticated user information to downstream requests.
  * 
  * For every authenticated request through the gateway:
  * Extracts user roles and ID from Spring Security context
