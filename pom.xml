@@ -106,8 +106,17 @@
 		    <artifactId>vault</artifactId>
 		    <scope>test</scope>
 		</dependency>		
-
+<!-- https://mvnrepository.com/artifact/org.wiremock.integrations/wiremock-spring-boot
+		mcocker les micro-services -->
+		<dependency>
+		    <groupId>org.wiremock.integrations</groupId>
+		    <artifactId>wiremock-spring-boot</artifactId>
+		    <version>4.0.8</version>
+		    <scope>test</scope>
+		</dependency>
+		
 	</dependencies>
+	
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -135,6 +144,21 @@
 			<plugin>
 	            <groupId>org.apache.maven.plugins</groupId>
 	            <artifactId>maven-failsafe-plugin</artifactId>
+	             <!-- Configurer Failsafe pour qu’il exécute les *IT.java -->
+	            <configuration>
+			        <includes>
+			            <include>**/*IT.java</include>
+			        </includes>
+			    </configuration>
+			    <executions>
+			        <execution>
+			            <id>integration-tests</id>
+			            <goals>
+			                <goal>integration-test</goal>
+			                <goal>verify</goal>
+			            </goals>
+			        </execution>
+			    </executions>
 	            <dependencies>
 	                <dependency>
 	                    <groupId>org.junit.jupiter</groupId>
@@ -146,6 +170,11 @@
 			
 			<plugin>
 			    <artifactId>maven-surefire-plugin</artifactId>
+			     <configuration>
+			        <excludes>
+			            <exclude>**/*IT.java</exclude>
+			        </excludes>
+			    </configuration>
 			</plugin>
 		
 			<plugin>
@@ -165,6 +194,11 @@
 	                    <goals>
 	                        <goal>report</goal>
 	                    </goals>
+	                    <configuration>
+			        <excludes>
+			            <exclude>com/medilabo/abernathyclinic/gateway/config/UserInitializer*</exclude>
+			        </excludes>
+			     </configuration>
 	                </execution>
 	            </executions>
 	        </plugin>
