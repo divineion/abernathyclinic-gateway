@@ -65,12 +65,10 @@ public class UserInitializer {
 
 	@Bean
 	CustomMapReactiveUserDetailsService initDemoUsers() throws JsonProcessingException {	
-			//  create users
 		List<AppUser> users = new ArrayList<>();
 		LocalDateTime now = LocalDateTime.now();
 	
 		
-		// TODO isoler le code dans une méthode helper
 		AppUser organizer1 = new AppUser(
 			1,	
 			UUID.randomUUID(),
@@ -138,7 +136,6 @@ public class UserInitializer {
 		users.add(doctor3);
 		
 	
-		// TODO refactoriser pour récupérer un List de Mono plutôt que de subscribe() pour chaq
 		for (AppUser user : users) {
 			storeUserSecrets(user).subscribe();
 		}
@@ -148,9 +145,7 @@ public class UserInitializer {
 
 	private Mono<Void> storeUserSecrets(AppUser user) throws JsonMappingException, JsonProcessingException {
 		Map<String, Object> secret;
-		// Convertir AppUser ->  Map ; objectMapper retourne un Map brut Map<Object, Object>
-		// il faut indiquer le type attendu sinon warning
-		// https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-core/latest/com/fasterxml/jackson/core/type/TypeReference.html
+		
 		secret = objectMapper.convertValue(user, new TypeReference<Map<String, Object>>(){});
 				
 		Mono<VaultResponse> writeUserSecret = vaultSecretWriter.writeSecret(usersSecretBasePath + user.getUsername(), secret);
@@ -159,7 +154,6 @@ public class UserInitializer {
 			.doOnSuccess(_ -> 
 				logger.info("User with username " + user.getUsername() + " has been saved"))
 			.doOnError(error -> logger.error(error.getMessage()))
-			// retourner le Mono de Void qui rejoue le signal complete ou error 
 			.then();		
 				
 	}
