@@ -1,0 +1,31 @@
+# GatewayAutoConfiguration instancie un bean de type GlobalCoresProperies qui contiendra la configuration CORS
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          globalcors:
+            cors-configurations: 
+              '[/**]':
+                allowed-origins: "http://localhost:5173, http://localhost:5174"
+                allowed-methods: "GET,POST,PATCH,OPTIONS"
+                allowed-headers: "*"
+                maxAge: 3600
+logging:
+  level:
+     org: 
+      springframework: 
+        cloud: 
+          gateway: DEBUG
+# configuration properties for interacting with Vault
+vault:
+  host: ${DEV_VAULT_ENDPOINT_HOST}
+  port: ${DEV_VAULT_ENDPOINT_PORT}
+  scheme: ${DEV_VAULT_ENDPOINT_SCHEME}
+  token :
+    users:
+      write: ${DEV_SPRING_USER_CREATOR_VAULT_TOKEN}
+      read: ${DEV_SPRING_USER_READER_VAULT_TOKEN}
+  kv:
+    backend: secret
+    path: ${DEV_VAULT_USERS_KV_PATH}

@@ -1,0 +1,69 @@
+package com.medilabo.abernathyclinic.gateway.config;
+
+import java.time.LocalDateTime;
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+/**
+ * Represents an authenticated user in the Gateway system.
+ *
+ * <p>This class implements {@link UserDetails} so that it can be used by Spring Security.</p>
+ *
+ * <p>Fields include:
+ * <ul>
+ *   <li>id: internal ID</li>
+ *   <li>username and password</li>
+ *   <li>authorities: roles granted to the user</li>
+ *   <li>createdAt and updatedAt timestamps</li>
+ * </ul>
+ * </p>
+ */
+public class AppUser implements UserDetails {
+	private static final long serialVersionUID = 7089376405301370171L;
+	private final long id;
+    private final String username;
+    private final String password;
+    private final Collection<? extends GrantedAuthority> authorities;
+    
+    private final LocalDateTime createdAt;
+    
+    private final LocalDateTime updatedAt;
+	
+	public AppUser(long id, String username, String password, Collection<? extends GrantedAuthority> authorities, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.authorities = authorities;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
+
+	public long getId() {
+		return id;
+	}
+	
+	@Override
+	public String getUsername() {
+		return username;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return authorities;
+	}
+
+	@Override
+	public String getPassword() {
+		return password;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+	
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+}

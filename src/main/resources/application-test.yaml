@@ -1,0 +1,29 @@
+# configuration properties for interacting with Vault
+vault:
+  host: ${TEST_VAULT_ENDPOINT_HOST}
+  port: ${TEST_VAULT_ENDPOINT_PORT}
+  scheme: ${TEST_VAULT_ENDPOINT_SCHEME}
+  token: 
+    users:
+      write: ${TEST_SPRING_USER_CREATOR_VAULT_TOKEN}
+      read: ${TEST_SPRING_USER_READER_VAULT_TOKEN}
+  kv:
+    backend: secret
+    path: ${TEST_VAULT_USERS_KV_PATH}
+
+patient:
+  service:
+    url: ${MICROSERVICE_PATIENT_URI:http://localhost:8097}
+notes:
+  service:
+    url: ${MICROSERVICE_NOTE_URI:http://localhost:8098}
+report:
+  service:
+    url: ${MICROSERVICE_REPORT_URI:http://localhost:8099}
+
+logging:
+  level:
+    org:
+      springframework: 
+        cloud:
+          gateway: DEBUG
