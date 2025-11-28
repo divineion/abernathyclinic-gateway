@@ -10,3 +10,20 @@ vault:
   kv:
     backend: secret
     path: ${TEST_VAULT_USERS_KV_PATH}
+
+patient:
+  service:
+    url: ${MICROSERVICE_PATIENT_URI:http://localhost:8097}
+notes:
+  service:
+    url: ${MICROSERVICE_NOTE_URI:http://localhost:8098}
+report:
+  service:
+    url: ${MICROSERVICE_REPORT_URI:http://localhost:8099}
+
+logging:
+  level:
+    org:
+      springframework: 
+        cloud:
+          gateway: DEBUG
