@@ -98,16 +98,16 @@ See Automated Vault Startup script.
 ```bash
 mkdir -p ~/vault-policies/abernathyclinic/
 
-touch vault-policies/abernathyclinic/dev-spring-user-creator.hcl
-touch vault-policies/abernathyclinic/dev-spring-user-reader.hcl
+touch ~/vault-policies/abernathyclinic/dev-spring-user-creator.hcl
+touch ~/vault-policies/abernathyclinic/dev-spring-user-reader.hcl
 
-touch vault-policies/abernathyclinic/docker-spring-user-creator.hcl
-touch vault-policies/abernathyclinic/docker-spring-user-reader.hcl
+touch ~/vault-policies/abernathyclinic/docker-spring-user-creator.hcl
+touch ~/vault-policies/abernathyclinic/docker-spring-user-reader.hcl
 ``̀
 
 ### Add policies to Vault
 Dev environment
-`nano vault-policies/abernathyclinic/dev-spring-user-creator.hcl`
+`nano ~/vault-policies/abernathyclinic/dev-spring-user-creator.hcl`
 
 ```bash
 # allow policy to generate child tokens
@@ -131,7 +131,7 @@ path "secret/abernathyclinic-gateway/docker/users/*" {
 
 
 Docker environment
-`nano vault-policies/abernathyclinic/docker-spring-user-creator.hcl`
+`nano ~/vault-policies/abernathyclinic/docker-spring-user-creator.hcl`
 
 
 ```bash
@@ -145,7 +145,7 @@ path "secret/abernathyclinic-gateway/docker/users/*" {
 ```
 
 
-`nano vault-policies/abernathyclinic/docker-spring-user-reader.hcl`
+`vault policy write ~/vault-policies/abernathyclinic/docker-spring-user-reader.hcl`
 
 
 ```bash
@@ -154,7 +154,7 @@ path "secret/abernathyclinic-gateway/docker/users/*" {
 }
 ```
 
-`vault policy write docker-spring-user-reader vault-policies/abernathyclinic/docker-spring-user-reader.hcl`
+`vault policy write docker-spring-user-reader ~/vault-policies/abernathyclinic/docker-spring-user-reader.hcl`
 
 ### Apply policies and create tokens
 Dev environment
@@ -182,10 +182,10 @@ Create a token with read/write access policy and login
 Complete `.env` :   
 DEV_SPRING_USER_CREATOR_VAULT_TOKEN=<creator_token>
 DEV_SPRING_USER_READER_VAULT_TOKEN=<reader_token>
+DEV_VAULT_USERS_KV_PATH=secret/abernathyclinic-gateway/dev/users/
+
 DOCKER_SPRING_USER_CREATOR_VAULT_TOKEN=<creator_token>
 DOCKER_SPRING_USER_READER_VAULT_TOKEN=<reader_token>
-
-DEV_VAULT_USERS_KV_PATH=secret/abernathyclinic-gateway/dev/users/
 DOCKER_VAULT_USERS_KV_PATH=secret/abernathyclinic-gateway/docker/users/
 
 # Automated Vault Startup script
@@ -217,14 +217,31 @@ gnome-terminal -- bash -c "vault server -config=/etc/vault.d/vault-dev.hcl; exec
 sleep 3
 
 gnome-terminal --tab -- bash -c "
+
 echo 'export VAULT_ADDR=http://localhost:8200'
 export VAULT_ADDR=http://localhost:8200
+
+if [ ! -f ".vault-tokens/abernathyclinic/dev/unseal-key1" ]; then
+  echo "Error: unseal-key1 not found at .vault-tokens/abernathyclinic/dev/unseal-key1"
+  exit 1
+fi
 echo '-------- UNSEAL 1/3 --------'
 vault operator unseal $(cat .vault-tokens/abernathyclinic/dev/unseal-key1)
+
+if [ ! -f ".vault-tokens/abernathyclinic/dev/unseal-key2" ]; then
+  echo "Error: unseal-key2 not found at .vault-tokens/abernathyclinic/dev/unseal-key2"
+  exit 1
+fi
 echo '-------- UNSEAL 2/3 --------'
 vault operator unseal $(cat .vault-tokens/abernathyclinic/dev/unseal-key2)
+
+if [ ! -f ".vault-tokens/abernathyclinic/dev/unseal-key3" ]; then
+  echo "Error: unseal-key3 not found at .vault-tokens/abernathyclinic/dev/unseal-key3"
+  exit 1
+fi
 echo '-------- UNSEAL 3/3 --------'
 vault operator unseal $(cat .vault-tokens/abernathyclinic/dev/unseal-key3)
+
 STATUS=\$(vault status -format=json | jq -r .sealed)
 echo 'Vault sealed status = '\$STATUS
 exec bash
