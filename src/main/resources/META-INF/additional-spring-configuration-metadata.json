@@ -33,5 +33,20 @@
     "name": "vault.token.users.read",
     "type": "java.lang.String",
     "description": "The Vault authentication token used for read operations."
+  },
+  {
+    "name": "patient.service.url",
+    "type": "java.lang.String",
+    "description": "Microservice patient URL"
+  },
+  {
+    "name": "notes.service.url",
+    "type": "java.lang.String",
+    "description": "Microservice Notes URL"
+  },
+  {
+    "name": "report.service.url",
+    "type": "java.lang.String",
+    "description": "Microservice Report URL"
   }
 ]}
