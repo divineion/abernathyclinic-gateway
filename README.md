@@ -1,249 +1,85 @@
-# Local Setup Guide for HashiCorp Vault
-This guide explains how to install, configure, and initialize HashiCorp Vault locally so it can be used by the Abernathyclinic microservices running in Docker.
+[FR](#api-gateway-fr) | [EN](#api-gateway-en)
 
-## Requirements
-Linux (or enabled WSL on Windows)
-sudo access
+# API Gateway (FR)
 
-## Install Vault
-Follow the official installation guide : 
-https://developer.hashicorp.com/vault/install#linux
+## Architecture
+Ce microservice fait partie d'une application de gestion de données médicales et démographiques permettant d'obtenir des rapports de risques en fonction des profils des patients et de leurs constatations médicales.
 
+Il s'intègre à l'application avec d'autres microservices :
+ - [Microservice Patient](https://github.com/divineion/abernathyclinic-patient) pour la gestion des données démographiques des patients. 
+ - [Microservice Notes](https://github.com/divineion/abernathyclinic-notes) pour la gestion des données médicales.  
+ - [Microservice Report](https://github.com/divineion/abernathyclinic-report) pour l'évaluation du niveau de risque de diabète en croisant les données démographiques et les notes médicales.   
+ - [Infrastructure](https://github.com/divineion/abernathyclinic-infra) pour l'orchestration Docker.   
+ - [Interface utilisateur](https://github.com/divineion/abernathyclinic-client) pour l'interface web de gestion des fiches patients et la consultation des rapports de risque.   
+ 
+ ![Schéma d'architecture](docs/app-architecture.png) 
+ 
+ 
+## 1. Rôle
+L'API Gateway constitue le point d'entrée du système : 
+ - routage et réécriture d'URL vers les microservices cibles (Patient, Notes et Report),
+ - authentification HTTP Basic et gestion des règles CORS,
+ - propagation du contexte de sécurité (injection des identifiants et rôles utilisateurs via les en-têtes `X-Auth-User-Roles` et `X-Auth-User-Id`),
+ - gestion des secrets avec HashiCorp Vault (écriture et lecture des identifiants utilisateurs dans le moteur Key-Value). 
 
-## Configure HashiCorp Vault
-### Create directories for Vault data and config:
+## 2. Choix techniques
+ - Langage : **Java 24**
+ - Framework : **SpringBoot** (Spring Cloud Gateway Server Webflux, Spring Security Reactive)
+ - Gestion des secrets : **HashiCorp Vault**, Spring Vault Reactive
+ - Tests d'intégration : **Wiremock**, **Testcontainers** pour le module Vault
+ - Conteneurisation : **Docker**
 
-```bash 
-sudo mkdir -p /opt/vault/data-dev
-sudo mkdir -p /opt/vault/data-docker
-sudo mkdir -p /etc/vault.d
+## 3. Configuration
+La configuration est définie dans `application.yaml` et ses déclinaisons, et complétée par un fichier `.env`.
 
-sudo chown -R $(whoami):$(whoami) /opt/vault
-sudo chown -R $(whoami):$(whoami) /etc/vault.d
+Copiez `.env.example` vers `.env` pour renseigner vos variables locales : 
+`ORGANIZER1_PASSWORD` | Mot de passe de l'utilisateur de démo organizer1 | **à renseigner**   
+`ORGANIZER2_PASSWORD` | Mot de passe de l'utilisateur de démo organizer2 | **à renseigner**   
+`ORGANIZER3_PASSWORD` | Mot de passe de l'utilisateur de démo organizer3 | **à renseigner**   
+
+`DOCTOR1_PASSWORD` | Mot de passe de l'utilisateur de démo doctor1 | **à renseigner**   
+`DOCTOR2_PASSWORD` | Mot de passe de l'utilisateur de démo doctor2 | **à renseigner**    
+`DOCTOR3_PASSWORD` | Mot de passe de l'utilisateur de démo doctor3 | **à renseigner**   
+
+`DEV_VAULT_ENDPOINT_HOST` | Hôte du serveur Vault (profil dev) | `127.0.0.1`   
+`DEV_VAULT_ENDPOINT_SCHEME` | Protocole HTTP Vault (profil dev) | `http`   
+`DEV_VAULT_ENDPOINT_PORT` | Port d'écoute Vault (profil dev) | `8200`   
+
+`DEV_SPRING_USER_CREATOR_VAULT_TOKEN` | Token Vault avec droits d'écriture (création users) | **à renseigner**   
+`DEV_SPRING_USER_READER_VAULT_TOKEN` | Token Vault avec droits de lecture seule | **à renseigner**   
+
+`DEV_VAULT_USERS_KV_PATH` | Chemin du moteur KV Vault pour les utilisateurs | `secret/abernathyclinic-gateway/dev/users/`   
+
+`DOCKER_VAULT_ENDPOINT_HOST` | Hôte du serveur Vault (environnement Docker) | `127.0.0.1`   
+`DOCKER_VAULT_ENDPOINT_SCHEME` | Protocole HTTP Vault (environnement Docker) | `http`   
+`DOCKER_VAULT_ENDPOINT_PORT` | Port d'écoute Vault (environnement Docker) | `8300`   
+
+`DOCKER_SPRING_USER_CREATOR_VAULT_TOKEN` | Token d'écriture Vault (Docker) | **à renseigner**   
+`DOCKER_SPRING_USER_READER_VAULT_TOKEN` | Token de lecture Vault (Docker) | **à renseigner**   
+
+`DOCKER_VAULT_USERS_KV_PATH` | Chemin KV Vault pour Docker | `secret/abernathyclinic-gateway/docker/users/`
+
+## 4. Principaux endpoints
+L'API Gateway intercepte les requêtes publiques et les réécrit vers les endpoints des microservices. 
+
+GET `/user` : retourne l'état d'authentification, le nom d'utilisateur et les rôles de la session courante.
+
+`/patient/**` : redirige vers le Microservice Patient (`http://localhost:8081/api/...`).
+`/patients` : redirige vers la liste des patients (`http://localhost:8081/api/patients`).
+`/note/**`, `/notes/**` : redirige vers le Microservice Notes (`http://localhost:8083/api/...`).
+`/report/**` : redirige vers le Microservice Report (`http://localhost:8084/api/...`).
+
+## 5. Démarrage rapide
+### Prérequis
+ - Java 24
+ - Maven 3.x
+ - Instance HashiCorp Vault démarrée et déverrouillée
+ - Fichier `.env` complété
+
+### Lancer l'API Gateway
+```
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-### Create configuration files
-```
-touch /etc/vault.d/vault-dev.hcl
-touch /etc/vault.d/vault-docker.hcl
-```
-Add the following configurations :   
-Local dev : `nano /etc/vault.d/vault-dev.hcl`:
-vault-dev.hcl :
-
-```
-ui = true
-
-storage "file" {
-  path = "/opt/vault/data-dev"
-}
-
-listener "tcp" {
-  address = "127.0.0.1:8200"
-  tls_disable = 1
-}
-```
-
-Docker environment : `nano /etc/vault.d/vault-docker.hcl`   
-vault-docker.hcl:
-```bash 
-ui = true
-
-
-storage "file" {
-  path = "/opt/vault/data-docker"
-}
-
-listener "tcp" {
-  address = "127.0.0.1:8300"
-  tls_disable = 1
-}
-```
-
-## Start Vault servers
-### Dev Vault
-Dev refers to Spring dev profile, not to Vault dev server. 
-
-Terminal 1 : `vault server -config=/etc/vault.d/vault-dev.hcl`
-
-Terminal 2 : 
-```bash
-export VAULT_ADDR='http://localhost:8200'
-export VAULT_API_ADDR='http://localhost:8200'
-```
-
-
-### Docker Vault
-Terminal 3 : `vault server -config=/etc/vault.d/vault-docker.hcl`
-
-Terminal 4 : 
-```bash
-export VAULT_ADDR='http://localhost:8300'
-export VAULT_API_ADDR='http://localhost:8300'
-```
-
-## Initialize Vault (for each server in a new terminal)
-`vault operator init`
-Save the 5 unseal keys and root token (you will need them to unseal Vault after restarts). 
-See Automated Vault Startup script.
-
-`vault login <root_token>`
-
-## Enable KV secrets (v1)
-`vault secrets enable -version1 -path=secret kv`
-
-## Create policies and tokens
-### Create policy files
-
-```bash
-mkdir -p ~/vault-policies/abernathyclinic/
-
-touch ~/vault-policies/abernathyclinic/dev-spring-user-creator.hcl
-touch ~/vault-policies/abernathyclinic/dev-spring-user-reader.hcl
-
-touch ~/vault-policies/abernathyclinic/docker-spring-user-creator.hcl
-touch ~/vault-policies/abernathyclinic/docker-spring-user-reader.hcl
-``̀
-
-### Add policies to Vault
-Dev environment
-`nano ~/vault-policies/abernathyclinic/dev-spring-user-creator.hcl`
-
-```bash
-# allow policy to generate child tokens
-path "auth/token/create" {
-  capabilities=["create", "update"]
-}
-
-# allow policy to create, read, update, delete and list users secrets under dev environment
-path "secret/abernathyclinic-gateway/dev/users/*" {
-  capabilities = ["create", "read", "update", "patch", "delete", "list", "recover"]
-}
-```
-
-`vault policy write dev-spring-user-reader vault-policies/abernathyclinic/dev-spring-user-reader.hcl`
-
-```bash
-path "secret/abernathyclinic-gateway/docker/users/*" {
-  capabilities = ["read"]
-}
-```
-
-
-Docker environment
-`nano ~/vault-policies/abernathyclinic/docker-spring-user-creator.hcl`
-
-
-```bash
-path "auth/token/create" {
-  capabilities=["create", "update"]
-}
-
-path "secret/abernathyclinic-gateway/docker/users/*" {
-  capabilities = ["create", "read", "update", "patch", "delete", "list", "recover"]
-}
-```
-
-
-`vault policy write ~/vault-policies/abernathyclinic/docker-spring-user-reader.hcl`
-
-
-```bash
-path "secret/abernathyclinic-gateway/docker/users/*" {
-  capabilities = ["read"]
-}
-```
-
-`vault policy write docker-spring-user-reader ~/vault-policies/abernathyclinic/docker-spring-user-reader.hcl`
-
-### Apply policies and create tokens
-Dev environment
-
-`vault policy write dev-spring-user-creator ~/vault-policies/abernathyclinic/dev-spring-user-creator.hcl`
-
-Create a token with read/write access policy and login
-`vault token create -policy=dev-spring-user-creator`
-`vault login <dev-spring-user-creator-token>`
-
-`vault token create -policy=dev-spring-user-reader`
-
-Docker environment
-
-Create a token with read/write access policy and login
-`vault token create -policy=docker-spring-user-creator`
-`vault login <docker-spring-user-creator-token>`
-
-`vault policy write docker-spring-user-creator ~/vault-policies/abernathyclinic/docker-spring-user-creator.hcl`
-
-
-`vault token create -policy=docker-spring-user-reader`
-
-
-Complete `.env` :   
-DEV_SPRING_USER_CREATOR_VAULT_TOKEN=<creator_token>
-DEV_SPRING_USER_READER_VAULT_TOKEN=<reader_token>
-DEV_VAULT_USERS_KV_PATH=secret/abernathyclinic-gateway/dev/users/
-
-DOCKER_SPRING_USER_CREATOR_VAULT_TOKEN=<creator_token>
-DOCKER_SPRING_USER_READER_VAULT_TOKEN=<reader_token>
-DOCKER_VAULT_USERS_KV_PATH=secret/abernathyclinic-gateway/docker/users/
-
-# Automated Vault Startup script
-To quickly start and unseal your Vault dev server, you can use the following script.
-Save it as start-vault-dev.sh and make it executable (`chmod +x start-vault-dev.sh`).
-
-## Requirements
- - gnome-terminal installed (for opening new terminal tabs).
- - jq installed (for parsing JSON output).
-
-Unseal keys saved in .vault-tokens/abernathyclinic/dev/unseal-key1, unseal-key2, unseal-key3.
-
-
-```bash
-if ss -ltn | grep -q ':8200'; then
-  echo "Port 8200 already in use. Trying to stop existing process."
-  PID=$(sudo lsof -t -i:8200)
-  if [ -n "$PID" ]; then
-    echo "Kill process $PID"
-    sudo kill -9 $PID
-  else
-    echo "Port in use but no PID found."
-    sleep 3
-  fi
-fi
-
-gnome-terminal -- bash -c "vault server -config=/etc/vault.d/vault-dev.hcl; exec bash"
-
-sleep 3
-
-gnome-terminal --tab -- bash -c "
-
-echo 'export VAULT_ADDR=http://localhost:8200'
-export VAULT_ADDR=http://localhost:8200
-
-if [ ! -f ".vault-tokens/abernathyclinic/dev/unseal-key1" ]; then
-  echo "Error: unseal-key1 not found at .vault-tokens/abernathyclinic/dev/unseal-key1"
-  exit 1
-fi
-echo '-------- UNSEAL 1/3 --------'
-vault operator unseal $(cat .vault-tokens/abernathyclinic/dev/unseal-key1)
-
-if [ ! -f ".vault-tokens/abernathyclinic/dev/unseal-key2" ]; then
-  echo "Error: unseal-key2 not found at .vault-tokens/abernathyclinic/dev/unseal-key2"
-  exit 1
-fi
-echo '-------- UNSEAL 2/3 --------'
-vault operator unseal $(cat .vault-tokens/abernathyclinic/dev/unseal-key2)
-
-if [ ! -f ".vault-tokens/abernathyclinic/dev/unseal-key3" ]; then
-  echo "Error: unseal-key3 not found at .vault-tokens/abernathyclinic/dev/unseal-key3"
-  exit 1
-fi
-echo '-------- UNSEAL 3/3 --------'
-vault operator unseal $(cat .vault-tokens/abernathyclinic/dev/unseal-key3)
-
-STATUS=\$(vault status -format=json | jq -r .sealed)
-echo 'Vault sealed status = '\$STATUS
-exec bash
-"
-```
+[EN](#api-gateway-en) | [FR](#api-gateway-fr)
+# API Gateway (EN)
