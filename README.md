@@ -41,6 +41,8 @@ Copiez `.env.example` vers `.env` pour renseigner vos variables locales :
 `DOCTOR2_PASSWORD` | Mot de passe de l'utilisateur de démo doctor2 | **à renseigner**    
 `DOCTOR3_PASSWORD` | Mot de passe de l'utilisateur de démo doctor3 | **à renseigner**   
 
+Pour la configuration de Vault, voir le [guide de configuration locale](docs/vault-setup.md)
+
 `DEV_VAULT_ENDPOINT_HOST` | Hôte du serveur Vault (profil dev) | `127.0.0.1`   
 `DEV_VAULT_ENDPOINT_SCHEME` | Protocole HTTP Vault (profil dev) | `http`   
 `DEV_VAULT_ENDPOINT_PORT` | Port d'écoute Vault (profil dev) | `8200`   
