@@ -1,5 +1,7 @@
 
 # Local Setup Guide for HashiCorp Vault
+Vault is used as a secure storage engine for application credentials and user roles (`DOCTOR` and `ORGANIZER`), consumed by the API Gateway for authentication. 
+
 This guide explains how to install, configure, and initialize HashiCorp Vault to generate access tokens in both development and Docker environments.
 
 ## 1. Prerequisites
