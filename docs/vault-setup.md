@@ -11,7 +11,7 @@ Install Vault following the [official documentation](https://developer.hashicorp
 
 
 ## 2. Directories and server configuration
-### Storage and configuration directories
+### 2.1 Storage directories
 
 ``` 
 sudo mkdir -p /opt/vault/data-dev /opt/vault/data-docker /etc/vault.d
@@ -19,8 +19,8 @@ sudo mkdir -p /opt/vault/data-dev /opt/vault/data-docker /etc/vault.d
 sudo chown -R $(whoami):$(whoami) /opt/vault /etc/vault.d
 ```
 
-### Server configuration
-#### dev instance
+### 2.2 Server configuration files
+#### Dev environment
 Create ` /etc/vault.d/vault-dev.hcl` (local dev on port `8200`).
 
 vault-dev.hcl :
@@ -60,7 +60,7 @@ listener "tcp" {
 }
 ```
 
-## 3. Server startup
+## 3. Server startup and initialization
 Note: dev refers to **Spring dev profile**, not to Vault dev server. 
 
 ### 3.1 Start the server
@@ -105,7 +105,7 @@ vault operator init
 
 **IMPORTANT** : Vault outputs **5 unseal keys** and **1 initial root token** : save them **securely**.
 
-### 3.3 Vault unseal and log in
+### 3.3 Unseal and root login
 Unseal the storage by providing 3 distinct unseal keys: 
 
 ```
@@ -123,8 +123,8 @@ Enable Key-Value engine (version 1) under the `/secret` path:
 vault secrets enable -version1 -path=secret kv`
 ```
 
-## 5. Define policies and generate tokens
-### Create policy  directories and files
+## 5. Policies and tokens
+### 5.1 Create policy files
 
 ```
 mkdir -p ~/vault-policies/abernathyclinic/
@@ -137,8 +137,6 @@ touch ~/vault-policies/abernathyclinic/dev-spring-user-reader.hcl
 touch ~/vault-policies/abernathyclinic/docker-spring-user-creator.hcl
 touch ~/vault-policies/abernathyclinic/docker-spring-user-reader.hcl
 ```
-
-### Add policies to Vault
 
 #### Dev environment
 
@@ -165,8 +163,7 @@ path "secret/abernathyclinic-gateway/docker/users/*" {
 }
 ```
 
-
-Docker environment
+#### Docker environment
 `nano ~/vault-policies/abernathyclinic/docker-spring-user-creator.hcl`
 
 
@@ -190,11 +187,9 @@ path "secret/abernathyclinic-gateway/docker/users/*" {
 }
 ```
 
-`vault policy write docker-spring-user-reader ~/vault-policies/abernathyclinic/docker-spring-user-reader.hcl`
-
-### Apply policies and create tokens
-Dev environment
-
+### 5.2 Apply policies and generate tokens
+#### Dev environment
+Create policies using the previously created policy files
 `vault policy write dev-spring-user-creator ~/vault-policies/abernathyclinic/dev-spring-user-creator.hcl`
 
 Create a token with read/write access policy and login
@@ -203,19 +198,14 @@ Create a token with read/write access policy and login
 
 `vault token create -policy=dev-spring-user-reader`
 
-Docker environment
-
-Create a token with read/write access policy and login
-`vault token create -policy=docker-spring-user-creator`
-
-`vault login <docker-spring-user-creator-token>`
+#### Docker environment
 
 `vault policy write docker-spring-user-creator ~/vault-policies/abernathyclinic/docker-spring-user-creator.hcl`
 
 
 `vault token create -policy=docker-spring-user-reader`
 
-
+### 5.3 Environment variables
 Complete `.env` : 
   
 DEV_SPRING_USER_CREATOR_VAULT_TOKEN=<creator_token>
@@ -226,7 +216,7 @@ DOCKER_SPRING_USER_CREATOR_VAULT_TOKEN=<creator_token>
 DOCKER_SPRING_USER_READER_VAULT_TOKEN=<reader_token>
 DOCKER_VAULT_USERS_KV_PATH=secret/abernathyclinic-gateway/docker/users/
 
-# Automated Vault Startup script
+## 6. Automated Vault Startup script (`start-vault-dev.sh`)
 To quickly start and unseal your Vault dev server, you can use the following script.
 Save it as start-vault-dev.sh and make it executable (`chmod +x start-vault-dev.sh`).
 
@@ -236,6 +226,12 @@ Save it as start-vault-dev.sh and make it executable (`chmod +x start-vault-dev.
 
 Unseal keys saved in .vault-tokens/abernathyclinic/dev/unseal-key1, unseal-key2, unseal-key3.
 
+### 6.1 Prerequisites
+ - gnome-terminal installed (for opening new terminal tabs),  
+ - jq installed (for parsing JSON output),
+ - existing `/opt/vault/data-dev` data storage
+ - configured `/etc/vault.d/vault-dev.hcl`
+ - 3 unseal keys saved in `.vault-tokens/abernathyclinic/dev/unseal-key1`, `.vault-tokens/abernathyclinic/dev/unseal-key2` and `.vault-tokens/abernathyclinic/dev/unseal-key3`.
 
 ```
 if ss -ltn | grep -q ':8200'; then
