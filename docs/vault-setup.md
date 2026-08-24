@@ -5,7 +5,7 @@ This guide explains how to install, configure, and initialize HashiCorp Vault to
 ## 1. Prerequisites
  - Linux or WSL2 (Ubuntu recommended)
  - `sudo` privileges
- - `gnome-terminal` and `jq` (required for automated startup script
+ - `gnome-terminal` and `jq` (required for automated startup script)
 
 Install Vault following the [official documentation](https://developer.hashicorp.com/vault/install#linux).
 
@@ -23,7 +23,7 @@ sudo chown -R $(whoami):$(whoami) /opt/vault /etc/vault.d
 #### Dev environment
 Create ` /etc/vault.d/vault-dev.hcl` (local dev on port `8200`).
 
-vault-dev.hcl :
+Add configuration to `vault-dev.hcl`:
 
 ```
 ui = true
@@ -44,7 +44,7 @@ listener "tcp" {
 touch /etc/vault.d/vault-docker.hcl
 ```
 
-vault-docker.hcl :
+Add configuration to `vault-docker.hcl` :
 
 ```
 ui = true
@@ -68,19 +68,16 @@ Note: dev refers to **Spring dev profile**, not to Vault dev server.
 In terminal 1: 
 
 ```
-vault server -config=/etc/vault.d/vault-dev.hcl`
+vault server -config=/etc/vault.d/vault-dev.hcl
 ```
-
 
 #### Docker instance
 
 In terminal 1: 
 
 ```
-vault server -config=/etc/vault.d/vault-docker.hcl`
+vault server -config=/etc/vault.d/vault-docker.hcl
 ```
-
-
 
 ### 3.2 Initialize Vault
 #### Dev instance
@@ -102,7 +99,6 @@ export VAULT_API_ADDR='http://localhost:8300'
 vault operator init
 ```
 
-
 **IMPORTANT** : Vault outputs **5 unseal keys** and **1 initial root token** : save them **securely**.
 
 ### 3.3 Unseal and root login
@@ -120,7 +116,7 @@ vault login <root_token>
 Enable Key-Value engine (version 1) under the `/secret` path:
 
 ```
-vault secrets enable -version1 -path=secret kv`
+vault secrets enable -version=1 -path=secret kv
 ```
 
 ## 5. Policies and tokens
@@ -142,6 +138,8 @@ touch ~/vault-policies/abernathyclinic/docker-spring-user-reader.hcl
 
 `nano ~/vault-policies/abernathyclinic/dev-spring-user-creator.hcl`
 
+Add configuration to `dev-spring-user-creator.hcl`:
+
 ```
 # allow policy to generate child tokens
 path "auth/token/create" {
@@ -154,8 +152,9 @@ path "secret/abernathyclinic-gateway/dev/users/*" {
 }
 ```
 
-`vault policy write dev-spring-user-reader vault-policies/abernathyclinic/dev-spring-user-reader.hcl`
+`nano ~/vault-policies/abernathyclinic/dev-spring-user-reader.hcl`
 
+Fill `dev-spring-user-reader.hcl` : 
 
 ```
 path "secret/abernathyclinic-gateway/docker/users/*" {
@@ -166,6 +165,7 @@ path "secret/abernathyclinic-gateway/docker/users/*" {
 #### Docker environment
 `nano ~/vault-policies/abernathyclinic/docker-spring-user-creator.hcl`
 
+Fill `docker-spring-user-creator.hcl`:
 
 ```
 path "auth/token/create" {
@@ -178,8 +178,9 @@ path "secret/abernathyclinic-gateway/docker/users/*" {
 ```
 
 
-`vault policy write ~/vault-policies/abernathyclinic/docker-spring-user-reader.hcl`
+`nano ~/vault-policies/abernathyclinic/docker-spring-user-reader.hcl`
 
+Add configuration to `docker-spring-user-reader.hcl`
 
 ```
 path "secret/abernathyclinic-gateway/docker/users/*" {
@@ -191,40 +192,41 @@ path "secret/abernathyclinic-gateway/docker/users/*" {
 #### Dev environment
 Create policies using the previously created policy files
 `vault policy write dev-spring-user-creator ~/vault-policies/abernathyclinic/dev-spring-user-creator.hcl`
+`vault policy write dev-spring-user-reader ~/vault-policies/abernathyclinic/dev-spring-user-reader.hcl`
 
-Create a token with read/write access policy and login
+Create a token with read/write access policy
 `vault token create -policy=dev-spring-user-creator`
-`vault login <dev-spring-user-creator-token>`
 
+Create a token with read access policy
 `vault token create -policy=dev-spring-user-reader`
 
 #### Docker environment
 
+Create policies using the previously created policy files
 `vault policy write docker-spring-user-creator ~/vault-policies/abernathyclinic/docker-spring-user-creator.hcl`
+`vault policy write docker-spring-user-reader ~/vault-policies/abernathyclinic/docker-spring-user-reader.hcl`
 
+Create a token with read/write access policy
+`vault token create -policy=docker-spring-user-creator`
 
+Create a token with read access policy
 `vault token create -policy=docker-spring-user-reader`
 
 ### 5.3 Environment variables
 Complete `.env` : 
   
-DEV_SPRING_USER_CREATOR_VAULT_TOKEN=<creator_token>
-DEV_SPRING_USER_READER_VAULT_TOKEN=<reader_token>
-DEV_VAULT_USERS_KV_PATH=secret/abernathyclinic-gateway/dev/users/
+DEV_SPRING_USER_CREATOR_VAULT_TOKEN | access token for user creation | your creator token    
+DEV_SPRING_USER_READER_VAULT_TOKEN | access token for user reading | your reader token    
+DEV_VAULT_USERS_KV_PATH | path to users storage | `secret/abernathyclinic-gateway/dev/users/`    
 
-DOCKER_SPRING_USER_CREATOR_VAULT_TOKEN=<creator_token>
-DOCKER_SPRING_USER_READER_VAULT_TOKEN=<reader_token>
-DOCKER_VAULT_USERS_KV_PATH=secret/abernathyclinic-gateway/docker/users/
+DOCKER_SPRING_USER_CREATOR_VAULT_TOKEN | access token for user creation in docker env | your creator token    
+DOCKER_SPRING_USER_READER_VAULT_TOKEN | access token for user reading in docker env | your reader token    
+DOCKER_VAULT_USERS_KV_PATH | path to users storage | `secret/abernathyclinic-gateway/docker/users/`    
 
 ## 6. Automated Vault Startup script (`start-vault-dev.sh`)
 To quickly start and unseal your Vault dev server, you can use the following script.
-Save it as start-vault-dev.sh and make it executable (`chmod +x start-vault-dev.sh`).
 
-## Requirements
- - gnome-terminal installed (for opening new terminal tabs).
- - jq installed (for parsing JSON output).
-
-Unseal keys saved in .vault-tokens/abernathyclinic/dev/unseal-key1, unseal-key2, unseal-key3.
+Save it as `start-vault-dev.sh` and make it executable (`chmod +x start-vault-dev.sh`).
 
 ### 6.1 Prerequisites
  - gnome-terminal installed (for opening new terminal tabs),  
