@@ -157,7 +157,7 @@ path "secret/abernathyclinic-gateway/dev/users/*" {
 Fill `dev-spring-user-reader.hcl` : 
 
 ```
-path "secret/abernathyclinic-gateway/docker/users/*" {
+path "secret/abernathyclinic-gateway/dev/users/*" {
   capabilities = ["read"]
 }
 ```
